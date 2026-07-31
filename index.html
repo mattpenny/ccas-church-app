@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CCAC Granada Hills</title>
+  <link rel="preconnect" href="https://fonts.fontsource.org" />
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-tc@latest/chinese-traditional-400-normal.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-tc@latest/chinese-traditional-700-normal.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-sc@latest/chinese-simplified-400-normal.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-sc@latest/chinese-simplified-700-normal.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Splash -->
+  <div class="splash" id="splash">
+    <div class="splash-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M5 9h14M7 5h10" /></svg>
+    </div>
+    <h1>CCAC</h1>
+    <p data-i18n="splashSub">格拉納達山基督教會</p>
+    <div class="splash-loader"></div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time" id="statusTime">9:41</span>
+    <div class="status-icons">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="app-header">
+    <div class="header-top">
+      <div class="header-logo">
+        <div class="logo-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M5 9h14M7 5h10"/></svg>
+        </div>
+        <div class="header-title">
+          <h1 data-i18n="appTitle">CCAC 格拉納達山</h1>
+          <p data-i18n="appSub">華人基督教聚會處</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="showModal('search')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <button class="icon-btn" onclick="showToast(t('toastMessages'))">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge">3</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content" id="content">
+    <!-- HOME -->
+    <div class="screen active" id="screen-home">
+      <div class="verse-card">
+        <div class="verse-text" id="verseText">神愛世人，甚至將他的獨生子賜給他們，叫一切信他的，不至滅亡，反得永生。</div>
+        <div class="verse-ref" id="verseRef">— 約翰福音 3:16</div>
+      </div>
+      <div class="quick-actions">
+        <div class="qa-item" onclick="switchTab('sermons')"><div class="qa-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span data-i18n="qaSermons">講道</span></div>
+        <div class="qa-item" onclick="switchTab('docs')"><div class="qa-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span data-i18n="qaDocs">文檔</span></div>
+        <div class="qa-item" onclick="switchTab('events')"><div class="qa-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><span data-i18n="qaEvents">活動</span></div>
+        <div class="qa-item" onclick="showModal('give')"><div class="qa-icon rose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><span data-i18n="qaGive">奉獻</span></div>
+      </div>
+      <div class="section-header"><h3 data-i18n="latestSermons">最新講道</h3><a href="#" onclick="switchTab('sermons');return false;" data-i18n="viewAll">查看全部</a></div>
+      <div class="sermon-card" onclick="openYouTube('nq1e0g8jQpE')">
+        <div class="sermon-thumb"><div class="yt-bg"></div><div class="yt-badge"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>YouTube</div><div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="duration">42:18</div></div>
+        <div class="sermon-info"><h4 data-i18n="sermon1Title">信心的行走：信靠神的計劃</h4><div class="sermon-meta"><span class="speaker" data-i18n="sermon1Speaker">陳大衛牧師</span><span class="dot"></span><span data-i18n="sermon1Date">2026年7月14日</span></div></div>
+      </div>
+      <div class="sermon-card" onclick="openYouTube('qN4ooNxvBDU')">
+        <div class="sermon-thumb"><div class="yt-bg"></div><div class="yt-badge"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>YouTube</div><div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="duration">35:42</div></div>
+        <div class="sermon-info"><h4 data-i18n="sermon2Title">告的力量：日常生活中的禱告</h4><div class="sermon-meta"><span class="speaker" data-i18n="sermon2Speaker">劉瑪麗牧師</span><span class="dot"></span><span data-i18n="sermon2Date">2026年7月7日</span></div></div>
+      </div>
+      <div class="section-header"><h3 data-i18n="announcements">公告通知</h3></div>
+      <div class="announcement" onclick="showModal('ann1')"><div class="ann-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg></div><div class="ann-content"><h4 data-i18n="ann1Title">主日崇拜時間調整</h4><p data-i18n="ann1Desc">從本週開始，英語崇拜時間調整為上午10:30。</p><div class="ann-time" data-i18n="ann1Time">2小時前</div></div></div>
+      <div class="announcement" onclick="showModal('ann2')"><div class="ann-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="ann-content"><h4 data-i18n="ann2Title">查經班 - 每週三</h4><p data-i18n="ann2Desc">每週三晚上7:30參加查經班。</p><div class="ann-time" data-i18n="ann2Time">1天前</div></div></div>
+      <div class="announcement" onclick="showModal('ann3')"><div class="ann-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="ann-content"><h4 data-i18n="ann3Title">社區關懷 - 食物募捐</h4><p data-i18n="ann3Desc">本週六幫助我們的鄰居。歡迎捐贈。</p><div class="ann-time" data-i18n="ann3Time">2天前</div></div></div>
+    </div>
+
+    <!-- SERMONS -->
+    <div class="screen" id="screen-sermons">
+      <div class="sermons-tabs">
+        <button class="tab-btn active" onclick="filterSermons(this,'all')" data-i18n="tabAll">全部</button>
+        <button class="tab-btn" onclick="filterSermons(this,'video')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg><span data-i18n="tabVideo">影片</span></button>
+        <button class="tab-btn" onclick="filterSermons(this,'audio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span data-i18n="tabAudio">音頻</span></button>
+        <button class="tab-btn" onclick="filterSermons(this,'recent')" data-i18n="tabRecent">最近</button>
+      </div>
+      <div class="sermon-list" id="sermonList">
+        <div class="sermon-item" data-type="video" onclick="openYouTube('nq1e0g8jQpE')"><div class="sermon-item-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div><div class="sermon-item-info"><h4 data-i18n="sermon1Title">信心的行走：信靠神的計劃</h4><div class="meta"><span class="speaker" data-i18n="sermon1Speaker">陳大衛牧師</span><span>•</span><span data-i18n="sermon1DateShort">7月14日</span></div></div></div>
+        <div class="sermon-item" data-type="audio" onclick="openYouTube('qN4ooNxvBDU')"><div class="sermon-item-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div><div class="sermon-item-info"><h4 data-i18n="sermon2Title">禱告的力量：日常生活中的禱告</h4><div class="meta"><span class="speaker" data-i18n="sermon2Speaker">劉瑪麗牧師</span><span>•</span><span data-i18n="sermon2DateShort">7月7日</span></div></div></div>
+        <div class="sermon-item" data-type="video" onclick="openYouTube('hTWKbfoikeg')"><div class="sermon-item-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div><div class="sermon-item-info"><h4 data-i18n="sermon3Title">恩典疊加：理解神的愛</h4><div class="meta"><span class="speaker" data-i18n="sermon3Speaker">陳大衛牧師</span><span>•</span><span data-i18n="sermon3DateShort">6月30日</span></div></div></div>
+        <div class="sermon-item" data-type="audio" onclick="openYouTube('fJ9rUzIMcZQ')"><div class="sermon-item-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div><div class="sermon-item-info"><h4 data-i18n="sermon4Title">困難中的盼望：在經文中找到力量</h4><div class="meta"><span class="speaker" data-i18n="sermon4Speaker">王約翰牧師</span><span>•</span><span data-i18n="sermon4DateShort">6月23日</span></div></div></div>
+        <div class="sermon-item" data-type="video" onclick="openYouTube('L_jWHesIxkk')"><div class="sermon-item-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div><div class="sermon-item-info"><h4 data-i18n="sermon5Title">有目的地生活：神對你生命的呼召</h4><div class="meta"><span class="speaker" data-i18n="sermon5Speaker">劉瑪麗牧師</span><span>•</span><span data-i18n="sermon5DateShort">6月16日</span></div></div></div>
+        <div class="sermon-item" data-type="audio" onclick="openYouTube('9bZkp7q19f0')"><div class="sermon-item-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div><div class="sermon-item-info"><h4 data-i18n="sermon6Title">敬拜的心</h4><div class="meta"><span class="speaker" data-i18n="sermon6Speaker">陳大衛牧師</span><span>•</span><span data-i18n="sermon6DateShort">6月9日</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- DOCS -->
+    <div class="screen" id="screen-docs">
+      <div class="section-header" style="margin-top:16px"><h3 data-i18n="docsTitle">📄 教會文檔</h3></div>
+      <div class="doc-card" onclick="showToast(t('openingPdf'))"><div class="doc-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"/></svg></div><div class="doc-info"><h4 data-i18n="doc1Title">週報 - 2026年7月20日</h4><p data-i18n="doc1Meta">PDF • 2.4 MB • 今天上傳</p></div><div class="doc-download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
+      <div class="doc-card" onclick="showToast(t('openingPdf'))"><div class="doc-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"/></svg></div><div class="doc-info"><h4 data-i18n="doc2Title">查經筆記 - 羅馬書第8章</h4><p data-i18n="doc2Meta">PDF • 1.8 MB • 7月16日</p></div><div class="doc-download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
+      <div class="doc-card" onclick="showToast(t('openingPdf'))"><div class="doc-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"/></svg></div><div class="doc-info"><h4 data-i18n="doc3Title">教會通訊 - 2026年7月</h4><p data-i18n="doc3Meta">PDF • 3.1 MB • 7月1日</p></div><div class="doc-download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
+      <div class="doc-card" onclick="showToast(t('openingPdf'))"><div class="doc-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"/></svg></div><div class="doc-info"><h4 data-i18n="doc4Title">代禱事項表格</h4><p data-i18n="doc4Meta">PDF • 540 KB • 6月25日</p></div><div class="doc-download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
+      <div class="doc-card" onclick="showToast(t('openingPdf'))"><div class="doc-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"/></svg></div><div class="doc-info"><h4 data-i18n="doc5Title">義工報名表格</h4><p data-i18n="doc5Meta">PDF • 820 KB • 6月18日</p></div><div class="doc-download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
+      <div class="doc-card" onclick="showToast(t('openingPdf'))"><div class="doc-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"/></svg></div><div class="doc-info"><h4 data-i18n="doc6Title">信仰宣言</h4><p data-i18n="doc6Meta">PDF • 1.2 MB • 6月10日</p></div><div class="doc-download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></div>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="screen" id="screen-events">
+      <div class="section-header" style="margin-top:16px"><h3 data-i18n="eventsTitle"> 近期活動</h3></div>
+      <div class="event-card" onclick="showModal('event1')"><div class="event-date"><span class="day">20</span><span class="month" data-i18n="monthJul">7月</span><span class="weekday" data-i18n="weekdaySun">週日</span></div><div class="event-info"><h4 data-i18n="event1Title">主日崇拜</h4><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span data-i18n="event1Time">上午9:00 - 11:30</span></p><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-i18n="event1Loc">主堂</span></p></div></div>
+      <div class="event-card" onclick="showModal('event2')"><div class="event-date"><span class="day">23</span><span class="month" data-i18n="monthJul">7月</span><span class="weekday" data-i18n="weekdayWed">週三</span></div><div class="event-info"><h4 data-i18n="event2Title">週中查經班</h4><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span data-i18n="event2Time">晚上7:30 - 9:00</span></p><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-i18n="event2Loc">團契廳</span></p></div></div>
+      <div class="event-card" onclick="showModal('event3')"><div class="event-date"><span class="day">26</span><span class="month" data-i18n="monthJul">7月</span><span class="weekday" data-i18n="weekdaySat">週六</span></div><div class="event-info"><h4 data-i18n="event3Title">社區食物募捐</h4><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span data-i18n="event3Time">上午10:00 - 下午2:00</span></p><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-i18n="event3Loc">教會停車場</span></p></div></div>
+      <div class="event-card" onclick="showModal('event4')"><div class="event-date"><span class="day">27</span><span class="month" data-i18n="monthJul">7月</span><span class="weekday" data-i18n="weekdaySun">週日</span></div><div class="event-info"><h4 data-i18n="event4Title">青年團契</h4><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span data-i18n="event4Time">下午5:00 - 7:00</span></p><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-i18n="event4Loc">青年活動室</span></p></div></div>
+      <div class="event-card" onclick="showModal('event5')"><div class="event-date"><span class="day">03</span><span class="month" data-i18n="monthAug">8月</span><span class="weekday" data-i18n="weekdaySun">週日</span></div><div class="event-info"><h4 data-i18n="event5Title">洗禮典禮</h4><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span data-i18n="event5Time">上午10:00 - 12:00</span></p><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-i18n="event5Loc">主堂</span></p></div></div>
+    </div>
+
+    <!-- MORE -->
+    <div class="screen" id="screen-more">
+      <div class="profile-card"><div class="profile-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="profile-info"><h3 data-i18n="welcomeGuest">歡迎，訪客</h3><p>guest@ccacgranadahills.org</p><span class="role" data-i18n="roleMember">成員</span></div></div>
+      <div class="menu-section" id="adminMenuSection" style="display:none"><h4 data-i18n="menuAdmin">管理員</h4><div class="menu-list"><div class="menu-item" onclick="showModal('upload')"><div class="menu-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div class="menu-item-text"><h5 data-i18n="menuUpload">上傳內容</h5><p data-i18n="menuUploadDesc">MP4、MP3或PDF</p></div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></div></div><div class="menu-item" onclick="switchTab('admin')"><div class="menu-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="menu-item-text"><h5 data-i18n="menuManage">管理內容</h5><p data-i18n="menuManageDesc">編輯或刪除上傳</p></div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></div></div><div class="menu-item" onclick="logoutAdmin()"><div class="menu-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div><div class="menu-item-text"><h5 data-i18n="menuLogout">登出管理員</h5><p data-i18n="menuLogoutDesc">返回普通成員模式</p></div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></div></div></div></div>
+      <div class="menu-section" id="loginMenuSection"><h4 data-i18n="menuAccount">帳戶</h4><div class="menu-list"><div class="menu-item" onclick="showModal('login')"><div class="menu-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></div><div class="menu-item-text"><h5 data-i18n="menuAdminLogin">管理員登入</h5><p data-i18n="menuAdminLoginDesc">存取管理後台</p></div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></div></div></div></div>
+      <div class="menu-section"><h4 data-i18n="menuChurchInfo">教會資訊</h4><div class="menu-list"><div class="menu-item" onclick="showModal('about')"><div class="menu-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div><div class="menu-item-text"><h5 data-i18n="menuAbout">關於CCAC</h5><p data-i18n="menuAboutDesc">我們的使命與信仰</p></div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></div></div><div class="menu-item" onclick="showModal('service')"><div class="menu-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="menu-item-text"><h5 data-i18n="menuService">聚會時間</h5><p data-i18n="menuServiceDesc">時間表與地點</p></div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></div></div><div class="menu-item" onclick="showModal('contact')"><div class="menu-icon rose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="menu-item-text"><h5 data-i18n="menuContact">聯絡我們</h5><p data-i18n="menuContactDesc">與我們取得聯繫</p></div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></div></div></div></div>
+      <div class="menu-section"><h4 data-i18n="menuSettings">設定</h4><div class="menu-list"><div class="menu-item" onclick="cycleLanguage()"><div class="menu-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="menu-item-text"><h5 data-i18n="menuLang">語言</h5><p id="currentLangText">繁體中文</p></div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></div></div><div class="menu-item" onclick="showToast(t('toastLogout'))"><div class="menu-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div><div class="menu-item-text"><h5 data-i18n="menuSignOut">登出</h5><p data-i18n="menuSignOutDesc">退出您的帳戶</p></div><div class="menu-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></div></div></div></div>
+      <div class="about-card"><h4 data-i18n="visitUs">📍 訪問我們</h4><div class="about-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="label" data-i18n="aboutAddress">地址</span><span class="value">Granada Hills, CA 91344</span></div><div class="about-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="label" data-i18n="aboutService">聚會</span><span class="value" data-i18n="aboutServiceValue">週日 上午9:00 和 10:30</span></div><div class="about-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span class="label" data-i18n="aboutEmail">郵箱</span><span class="value">info@ccacgranadahills.org</span></div></div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="screen admin-screen" id="screen-admin">
+      <div class="admin-header"><h2 data-i18n="adminTitle">管理後台</h2><p data-i18n="adminSub">內容管理與統計</p></div>
+      <div class="admin-stats"><div class="stat-card"><div class="num">24</div><div class="label" data-i18n="statVideos">影片講道</div></div><div class="stat-card"><div class="num">38</div><div class="label" data-i18n="statAudios">音頻講道</div></div><div class="stat-card"><div class="num">15</div><div class="label" data-i18n="statDocs">文檔資料</div></div></div>
+      <div class="admin-section"><h3 data-i18n="recentUploads">最近上傳</h3>
+        <div class="admin-item"><div class="admin-item-icon video"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div><div class="admin-item-info"><h4 data-i18n="sermon1Title">信心的行走：信靠神的計劃</h4><p data-i18n="adminItem1Meta">陳大衛牧師 • 7月14日 • 42:18</p></div><div class="admin-item-actions"><button class="admin-btn edit" onclick="showToast(t('toastEdit'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="admin-btn delete" onclick="showToast(t('toastDelete'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div>
+        <div class="admin-item"><div class="admin-item-icon audio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="admin-item-info"><h4 data-i18n="sermon2Title">禱告的力量：日常生活中的禱告</h4><p data-i18n="adminItem2Meta">劉瑪麗牧師 • 7月7日 • 35:42</p></div><div class="admin-item-actions"><button class="admin-btn edit" onclick="showToast(t('toastEdit'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="admin-btn delete" onclick="showToast(t('toastDelete'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div>
+        <div class="admin-item"><div class="admin-item-icon doc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="admin-item-info"><h4 data-i18n="doc1Title">週報 - 2026年7月20日</h4><p data-i18n="adminItem3Meta">PDF • 2.4 MB • 今天</p></div><div class="admin-item-actions"><button class="admin-btn edit" onclick="showToast(t('toastEdit'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="admin-btn delete" onclick="showToast(t('toastDelete'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div>
+      </div>
+      <div class="admin-section"><button class="upload-btn" onclick="showModal('upload')" data-i18n="adminUploadBtn">+ 上傳新內容</button></div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span data-i18n="navHome">首頁</span></button>
+    <button class="nav-item" onclick="switchTab('sermons')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg><span data-i18n="navSermons">講道</span></button>
+    <button class="nav-item" onclick="switchTab('docs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span data-i18n="navDocs">文檔</span></button>
+    <button class="nav-item" onclick="switchTab('events')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-i18n="navEvents">活動</span></button>
+    <button class="nav-item" onclick="switchTab('more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span data-i18n="navMore">更多</span></button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal" id="modalContent" onclick="event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
