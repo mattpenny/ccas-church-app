@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "ccac-backend",
   "version": "1.0.0",
   "description": "CCAC Church App Backend - Free Cloudflare Stack",
@@ -10,7 +10,7 @@
     "create-db": "wrangler d1 create ccac-db"
   },
   "dependencies": {
-    "itty-router": "^4.0.0"
+    "itty-router": "^4.2.2"
   },
   "devDependencies": {
     "wrangler": "^3.0.0"

@@ -5,11 +5,11 @@ compatibility_date = "2024-12-18"
 [[d1_databases]]
 binding = "DB"
 database_name = "ccac-db"
-database_id = "your-d1-database-id-here"
+database_id = "4196686c-58b4-43fe-8328-c3f10daae70d"
 
 [[r2_buckets]]
 binding = "R2"
-bucket_name = "ccac-storage"              # For PDFs and images only
+bucket_name = "ccac-storage"
 
 [vars]
 ADMIN_PASSWORD = "admin123"
@@ -17,11 +17,6 @@ ADMIN_PASSWORD = "admin123"
 [env.production]
 vars = { ADMIN_PASSWORD = "your-production-password" }
 
-# Static assets
-[[routes]]
-pattern = "/*"
-script = "ccac-api"
-
 [assets]
-directory = "./"
+directory = "./public"
 binding = "ASSETS"
