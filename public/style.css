@@ -280,6 +280,17 @@ body {
     padding-right: 16px;
 }
 
+/* ===== Small left/right padding for all pages ===== */
+#page-home > section,
+#page-home > div:not(.page-header),
+#page-events > section,
+#page-events > div:not(.page-header),
+#page-more > section,
+#page-more > div:not(.page-header) {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
 /* ===== 聖經 page mobile padding ===== */
 #page-bible .bible-content {
     padding-left: 12px;
