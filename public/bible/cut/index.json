@@ -1,0 +1,601 @@
+{
+ "version": "cut",
+ "label": "繁體和合本",
+ "source": "Public Domain, from ibibles.net",
+ "books": [
+  {
+   "id": 1,
+   "zh": "創世紀",
+   "en": "Genesis",
+   "testament": "OT",
+   "chapterCount": 50,
+   "verseCount": 1533,
+   "file": "/bible/cut/001.json"
+  },
+  {
+   "id": 2,
+   "zh": "出埃及記",
+   "en": "Exodus",
+   "testament": "OT",
+   "chapterCount": 40,
+   "verseCount": 1213,
+   "file": "/bible/cut/002.json"
+  },
+  {
+   "id": 3,
+   "zh": "利未記",
+   "en": "Leviticus",
+   "testament": "OT",
+   "chapterCount": 27,
+   "verseCount": 859,
+   "file": "/bible/cut/003.json"
+  },
+  {
+   "id": 4,
+   "zh": "民數記",
+   "en": "Numbers",
+   "testament": "OT",
+   "chapterCount": 36,
+   "verseCount": 1288,
+   "file": "/bible/cut/004.json"
+  },
+  {
+   "id": 5,
+   "zh": "申命记",
+   "en": "Deuteronomy",
+   "testament": "OT",
+   "chapterCount": 34,
+   "verseCount": 959,
+   "file": "/bible/cut/005.json"
+  },
+  {
+   "id": 6,
+   "zh": "約書亞記",
+   "en": "Joshua",
+   "testament": "OT",
+   "chapterCount": 24,
+   "verseCount": 658,
+   "file": "/bible/cut/006.json"
+  },
+  {
+   "id": 7,
+   "zh": "士師記",
+   "en": "Judges",
+   "testament": "OT",
+   "chapterCount": 21,
+   "verseCount": 618,
+   "file": "/bible/cut/007.json"
+  },
+  {
+   "id": 8,
+   "zh": "路得記",
+   "en": "Ruth",
+   "testament": "OT",
+   "chapterCount": 4,
+   "verseCount": 85,
+   "file": "/bible/cut/008.json"
+  },
+  {
+   "id": 9,
+   "zh": "撒母耳記上",
+   "en": "1 Samuel",
+   "testament": "OT",
+   "chapterCount": 31,
+   "verseCount": 810,
+   "file": "/bible/cut/009.json"
+  },
+  {
+   "id": 10,
+   "zh": "撒母耳記下",
+   "en": "2 Samuel",
+   "testament": "OT",
+   "chapterCount": 24,
+   "verseCount": 695,
+   "file": "/bible/cut/010.json"
+  },
+  {
+   "id": 11,
+   "zh": "列王記上",
+   "en": "1 Kings",
+   "testament": "OT",
+   "chapterCount": 22,
+   "verseCount": 816,
+   "file": "/bible/cut/011.json"
+  },
+  {
+   "id": 12,
+   "zh": "列王記下",
+   "en": "2 Kings",
+   "testament": "OT",
+   "chapterCount": 25,
+   "verseCount": 719,
+   "file": "/bible/cut/012.json"
+  },
+  {
+   "id": 13,
+   "zh": "歷代志上",
+   "en": "1 Chronicles",
+   "testament": "OT",
+   "chapterCount": 29,
+   "verseCount": 942,
+   "file": "/bible/cut/013.json"
+  },
+  {
+   "id": 14,
+   "zh": "歷代志下",
+   "en": "2 Chronicles",
+   "testament": "OT",
+   "chapterCount": 36,
+   "verseCount": 822,
+   "file": "/bible/cut/014.json"
+  },
+  {
+   "id": 15,
+   "zh": "以斯拉記",
+   "en": "Ezra",
+   "testament": "OT",
+   "chapterCount": 10,
+   "verseCount": 280,
+   "file": "/bible/cut/015.json"
+  },
+  {
+   "id": 16,
+   "zh": "尼希米記",
+   "en": "Nehemiah",
+   "testament": "OT",
+   "chapterCount": 13,
+   "verseCount": 406,
+   "file": "/bible/cut/016.json"
+  },
+  {
+   "id": 17,
+   "zh": "以斯帖記",
+   "en": "Esther",
+   "testament": "OT",
+   "chapterCount": 10,
+   "verseCount": 167,
+   "file": "/bible/cut/017.json"
+  },
+  {
+   "id": 18,
+   "zh": "約伯記",
+   "en": "Job",
+   "testament": "OT",
+   "chapterCount": 42,
+   "verseCount": 1070,
+   "file": "/bible/cut/018.json"
+  },
+  {
+   "id": 19,
+   "zh": "詩篇",
+   "en": "Psalms",
+   "testament": "OT",
+   "chapterCount": 150,
+   "verseCount": 2461,
+   "file": "/bible/cut/019.json"
+  },
+  {
+   "id": 20,
+   "zh": "箴言",
+   "en": "Proverbs",
+   "testament": "OT",
+   "chapterCount": 31,
+   "verseCount": 915,
+   "file": "/bible/cut/020.json"
+  },
+  {
+   "id": 21,
+   "zh": "傳道書",
+   "en": "Ecclesiastes",
+   "testament": "OT",
+   "chapterCount": 12,
+   "verseCount": 222,
+   "file": "/bible/cut/021.json"
+  },
+  {
+   "id": 22,
+   "zh": "雅歌",
+   "en": "Song of Songs",
+   "testament": "OT",
+   "chapterCount": 8,
+   "verseCount": 117,
+   "file": "/bible/cut/022.json"
+  },
+  {
+   "id": 23,
+   "zh": "以賽亞書",
+   "en": "Isaiah",
+   "testament": "OT",
+   "chapterCount": 66,
+   "verseCount": 1292,
+   "file": "/bible/cut/023.json"
+  },
+  {
+   "id": 24,
+   "zh": "耶利米書",
+   "en": "Jeremiah",
+   "testament": "OT",
+   "chapterCount": 52,
+   "verseCount": 1364,
+   "file": "/bible/cut/024.json"
+  },
+  {
+   "id": 25,
+   "zh": "耶利米哀歌",
+   "en": "Lamentations",
+   "testament": "OT",
+   "chapterCount": 5,
+   "verseCount": 154,
+   "file": "/bible/cut/025.json"
+  },
+  {
+   "id": 26,
+   "zh": "以西結書",
+   "en": "Ezekiel",
+   "testament": "OT",
+   "chapterCount": 48,
+   "verseCount": 1273,
+   "file": "/bible/cut/026.json"
+  },
+  {
+   "id": 27,
+   "zh": "但以理書",
+   "en": "Daniel",
+   "testament": "OT",
+   "chapterCount": 12,
+   "verseCount": 357,
+   "file": "/bible/cut/027.json"
+  },
+  {
+   "id": 28,
+   "zh": "何西阿書",
+   "en": "Hosea",
+   "testament": "OT",
+   "chapterCount": 14,
+   "verseCount": 197,
+   "file": "/bible/cut/028.json"
+  },
+  {
+   "id": 29,
+   "zh": "約珥書",
+   "en": "Joel",
+   "testament": "OT",
+   "chapterCount": 3,
+   "verseCount": 73,
+   "file": "/bible/cut/029.json"
+  },
+  {
+   "id": 30,
+   "zh": "阿摩司書",
+   "en": "Amos",
+   "testament": "OT",
+   "chapterCount": 9,
+   "verseCount": 146,
+   "file": "/bible/cut/030.json"
+  },
+  {
+   "id": 31,
+   "zh": "俄巴底亞書",
+   "en": "Obadiah",
+   "testament": "OT",
+   "chapterCount": 1,
+   "verseCount": 21,
+   "file": "/bible/cut/031.json"
+  },
+  {
+   "id": 32,
+   "zh": "約拿書",
+   "en": "Jonah",
+   "testament": "OT",
+   "chapterCount": 4,
+   "verseCount": 48,
+   "file": "/bible/cut/032.json"
+  },
+  {
+   "id": 33,
+   "zh": "彌迦書",
+   "en": "Micah",
+   "testament": "OT",
+   "chapterCount": 7,
+   "verseCount": 105,
+   "file": "/bible/cut/033.json"
+  },
+  {
+   "id": 34,
+   "zh": "那鴻書",
+   "en": "Nahum",
+   "testament": "OT",
+   "chapterCount": 3,
+   "verseCount": 47,
+   "file": "/bible/cut/034.json"
+  },
+  {
+   "id": 35,
+   "zh": "哈巴谷書",
+   "en": "Habakkuk",
+   "testament": "OT",
+   "chapterCount": 3,
+   "verseCount": 56,
+   "file": "/bible/cut/035.json"
+  },
+  {
+   "id": 36,
+   "zh": "西番雅書",
+   "en": "Zephaniah",
+   "testament": "OT",
+   "chapterCount": 3,
+   "verseCount": 53,
+   "file": "/bible/cut/036.json"
+  },
+  {
+   "id": 37,
+   "zh": "哈該書",
+   "en": "Haggai",
+   "testament": "OT",
+   "chapterCount": 2,
+   "verseCount": 38,
+   "file": "/bible/cut/037.json"
+  },
+  {
+   "id": 38,
+   "zh": "撒迦利亞書",
+   "en": "Zechariah",
+   "testament": "OT",
+   "chapterCount": 14,
+   "verseCount": 211,
+   "file": "/bible/cut/038.json"
+  },
+  {
+   "id": 39,
+   "zh": "瑪拉基書",
+   "en": "Malachi",
+   "testament": "OT",
+   "chapterCount": 4,
+   "verseCount": 55,
+   "file": "/bible/cut/039.json"
+  },
+  {
+   "id": 101,
+   "zh": "馬太福音",
+   "en": "Matthew",
+   "testament": "NT",
+   "chapterCount": 28,
+   "verseCount": 1071,
+   "file": "/bible/cut/101.json"
+  },
+  {
+   "id": 102,
+   "zh": "馬可福音",
+   "en": "Mark",
+   "testament": "NT",
+   "chapterCount": 16,
+   "verseCount": 678,
+   "file": "/bible/cut/102.json"
+  },
+  {
+   "id": 103,
+   "zh": "路加福音",
+   "en": "Luke",
+   "testament": "NT",
+   "chapterCount": 24,
+   "verseCount": 1151,
+   "file": "/bible/cut/103.json"
+  },
+  {
+   "id": 104,
+   "zh": "約翰福音",
+   "en": "John",
+   "testament": "NT",
+   "chapterCount": 21,
+   "verseCount": 878,
+   "file": "/bible/cut/104.json"
+  },
+  {
+   "id": 105,
+   "zh": "使徒行傳",
+   "en": "Acts",
+   "testament": "NT",
+   "chapterCount": 28,
+   "verseCount": 1007,
+   "file": "/bible/cut/105.json"
+  },
+  {
+   "id": 106,
+   "zh": "羅馬書",
+   "en": "Romans",
+   "testament": "NT",
+   "chapterCount": 16,
+   "verseCount": 433,
+   "file": "/bible/cut/106.json"
+  },
+  {
+   "id": 107,
+   "zh": "哥林多前書",
+   "en": "1 Corinthians",
+   "testament": "NT",
+   "chapterCount": 16,
+   "verseCount": 437,
+   "file": "/bible/cut/107.json"
+  },
+  {
+   "id": 108,
+   "zh": "哥林多後書",
+   "en": "2 Corinthians",
+   "testament": "NT",
+   "chapterCount": 13,
+   "verseCount": 257,
+   "file": "/bible/cut/108.json"
+  },
+  {
+   "id": 109,
+   "zh": "加拉太書",
+   "en": "Galatians",
+   "testament": "NT",
+   "chapterCount": 6,
+   "verseCount": 149,
+   "file": "/bible/cut/109.json"
+  },
+  {
+   "id": 110,
+   "zh": "以弗所書",
+   "en": "Ephesians",
+   "testament": "NT",
+   "chapterCount": 6,
+   "verseCount": 155,
+   "file": "/bible/cut/110.json"
+  },
+  {
+   "id": 111,
+   "zh": "腓立比書",
+   "en": "Philippians",
+   "testament": "NT",
+   "chapterCount": 4,
+   "verseCount": 104,
+   "file": "/bible/cut/111.json"
+  },
+  {
+   "id": 112,
+   "zh": "歌羅西書",
+   "en": "Colossians",
+   "testament": "NT",
+   "chapterCount": 4,
+   "verseCount": 95,
+   "file": "/bible/cut/112.json"
+  },
+  {
+   "id": 113,
+   "zh": "帖撒羅尼迦前書",
+   "en": "1 Thessalonians",
+   "testament": "NT",
+   "chapterCount": 5,
+   "verseCount": 89,
+   "file": "/bible/cut/113.json"
+  },
+  {
+   "id": 114,
+   "zh": "帖撒羅尼迦後書",
+   "en": "2 Thessalonians",
+   "testament": "NT",
+   "chapterCount": 3,
+   "verseCount": 47,
+   "file": "/bible/cut/114.json"
+  },
+  {
+   "id": 115,
+   "zh": "提摩太前書",
+   "en": "1 Timothy",
+   "testament": "NT",
+   "chapterCount": 6,
+   "verseCount": 113,
+   "file": "/bible/cut/115.json"
+  },
+  {
+   "id": 116,
+   "zh": "提摩太後書",
+   "en": "2 Timothy",
+   "testament": "NT",
+   "chapterCount": 4,
+   "verseCount": 83,
+   "file": "/bible/cut/116.json"
+  },
+  {
+   "id": 117,
+   "zh": "提多書",
+   "en": "Titus",
+   "testament": "NT",
+   "chapterCount": 3,
+   "verseCount": 46,
+   "file": "/bible/cut/117.json"
+  },
+  {
+   "id": 118,
+   "zh": "腓利門書",
+   "en": "Philemon",
+   "testament": "NT",
+   "chapterCount": 1,
+   "verseCount": 25,
+   "file": "/bible/cut/118.json"
+  },
+  {
+   "id": 119,
+   "zh": "希伯來書",
+   "en": "Hebrews",
+   "testament": "NT",
+   "chapterCount": 13,
+   "verseCount": 303,
+   "file": "/bible/cut/119.json"
+  },
+  {
+   "id": 120,
+   "zh": "雅各書",
+   "en": "James",
+   "testament": "NT",
+   "chapterCount": 5,
+   "verseCount": 108,
+   "file": "/bible/cut/120.json"
+  },
+  {
+   "id": 121,
+   "zh": "彼得前書",
+   "en": "1 Peter",
+   "testament": "NT",
+   "chapterCount": 5,
+   "verseCount": 105,
+   "file": "/bible/cut/121.json"
+  },
+  {
+   "id": 122,
+   "zh": "彼得後書",
+   "en": "2 Peter",
+   "testament": "NT",
+   "chapterCount": 3,
+   "verseCount": 61,
+   "file": "/bible/cut/122.json"
+  },
+  {
+   "id": 123,
+   "zh": "約翰一書",
+   "en": "1 John",
+   "testament": "NT",
+   "chapterCount": 5,
+   "verseCount": 105,
+   "file": "/bible/cut/123.json"
+  },
+  {
+   "id": 124,
+   "zh": "約翰二書",
+   "en": "2 John",
+   "testament": "NT",
+   "chapterCount": 1,
+   "verseCount": 13,
+   "file": "/bible/cut/124.json"
+  },
+  {
+   "id": 125,
+   "zh": "約翰三書",
+   "en": "3 John",
+   "testament": "NT",
+   "chapterCount": 1,
+   "verseCount": 15,
+   "file": "/bible/cut/125.json"
+  },
+  {
+   "id": 126,
+   "zh": "猶大書",
+   "en": "Jude",
+   "testament": "NT",
+   "chapterCount": 1,
+   "verseCount": 25,
+   "file": "/bible/cut/126.json"
+  },
+  {
+   "id": 127,
+   "zh": "啟示錄",
+   "en": "Revelation",
+   "testament": "NT",
+   "chapterCount": 22,
+   "verseCount": 404,
+   "file": "/bible/cut/127.json"
+  }
+ ]
+}

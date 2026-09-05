@@ -1,0 +1,33 @@
+{
+  "type": "module",
+  "name": "ccac-backend",
+  "version": "1.0.0",
+  "description": "CCAC Church App Backend - Free Cloudflare Stack",
+  "main": "backend/src/index.js",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "deploy": "wrangler deploy",
+    "migrate": "wrangler d1 migrations apply ccac-db",
+    "create-db": "wrangler d1 create ccac-db"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "itty-router": "^4.2.2"
+  },
+  "devDependencies": {
+    "wrangler": "^4.118.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattpenny/ccas-church-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattpenny/ccas-church-app/issues"
+  },
+  "homepage": "https://github.com/mattpenny/ccas-church-app#readme"
+}

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CCAC - 基督教會</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- ============ 頂部導航 ============ -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="header-left">
+                <div class="logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 2v20M5 9h14M7 5h10"/>
+                    </svg>
+                    <span>CCAC</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="header-date" id="headerDate"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============ 內容區域 ============ -->
+    <main class="main-content" id="mainContent">
+
+        <!-- ===== 首頁 ===== -->
+        <div class="page active" id="page-home">
+
+            <!-- 圖片輪播 -->
+            <section class="hero-carousel" id="heroCarousel">
+                <div class="carousel-slides" id="carouselSlides">
+                    <!-- 圖片由 JavaScript 動態載入 -->
+                </div>
+                <div class="carousel-dots" id="carouselDots"></div>
+            </section>
+
+            <!-- 講道大綱 -->
+            <section class="sermon-outline-card" onclick="switchPage('sermons')">
+                <div class="card-header">
+                    <span class="card-icon">📋</span>
+                    <h3>講道大綱</h3>
+                    <span class="card-date" id="sermonDate">(載入中...)</span>
+                </div>
+                <p class="card-hint">點擊查看所有講道</p>
+                <div class="card-arrow">→</div>
+            </section>
+
+            <!-- 週報 -->
+            <section class="newsletter-card" onclick="openNewsletter()">
+                <div class="card-header">
+                    <span class="card-icon">📰</span>
+                    <h3>教會週報</h3>
+                    <span class="card-date">CCAC 週報</span>
+                </div>
+                <div class="card-arrow">→</div>
+            </section>
+
+            <!-- 奉獻 -->
+            <section class="give-card" onclick="showModal('give')">
+                <div class="card-header">
+                    <span class="card-icon">❤️</span>
+                    <h3>奉獻給 CCAC</h3>
+                </div>
+                <p class="card-sub">線上奉獻平台</p>
+                <div class="card-arrow">→</div>
+            </section>
+
+            <!-- 公告區域 -->
+            <section class="announcements-section">
+                <div class="section-header">
+                    <h3>📢 最新公告</h3>
+                    <a href="#" onclick="switchPage('more');return false">查看全部 →</a>
+                </div>
+                <div id="homeAnnouncements"></div>
+            </section>
+
+            <!-- 近期活動 -->
+            <section class="events-section">
+                <div class="section-header">
+                    <h3>近期活動</h3>
+                    <a href="#" onclick="switchPage('events');return false">查看行事曆 →</a>
+                </div>
+                <div id="homeEvents"></div>
+            </section>
+
+            <!-- 快速連結 -->
+            <section class="quick-links">
+                <div class="quick-link" onclick="switchPage('sermons')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    <span>講道</span>
+                </div>
+                <div class="quick-link" onclick="switchPage('bible')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h10"/>
+                        <rect x="2" y="3" width="20" height="18" rx="2"/>
+                    </svg>
+                    <span>聖經</span>
+                </div>
+                <div class="quick-link" onclick="switchPage('events')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <span>活動</span>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== 講道頁面 ===== -->
+        <div class="page" id="page-sermons">
+
+            <!-- 1️⃣ 系列列表 -->
+            <div id="sermonSeriesView">
+                <div class="page-header">
+                    <h2>🎬 講道</h2>
+                    <p class="page-subtitle">按系列瀏覽講道與大綱</p>
+                </div>
+                <div class="series-group-list" id="seriesListContainer"></div>
+            </div>
+
+            <!-- 2️⃣ 系列內頁 -->
+            <div id="sermonSeriesDetail" style="display:none;">
+                <div class="btn-back" onclick="showSermonSeriesList()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                    <span>全部系列</span>
+                </div>
+                <div id="seriesDetailContent"></div>
+            </div>
+
+            <!-- 3️⃣ 單篇播放 -->
+            <div id="sermonPlayerView" style="display:none;">
+                <div class="btn-back" onclick="goBackFromPlayer()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                    <span>返回</span>
+                </div>
+                <div id="sermonPlayerContent"></div>
+            </div>
+        </div>
+
+        <!-- ===== 聖經頁面 ===== -->
+        <div class="page" id="page-bible">
+            <div class="page-header">
+                <h2>📖 聖經</h2>
+                <p class="page-subtitle">和合本 / 简体 / KJV • 全書章節閱讀</p>
+            </div>
+            <div class="bible-content" id="bibleContent">
+                <!-- 由 JavaScript 動態載入 -->
+            </div>
+        </div>
+
+        <!-- ===== 活動頁面 ===== -->
+        <div class="page" id="page-events">
+            <div class="page-header">
+                <h2>📅 活動</h2>
+                <p class="page-subtitle">教會活動與照片</p>
+            </div>
+
+            <!-- 活動照片輪播 -->
+            <section class="event-photos-carousel" id="eventPhotosCarousel">
+                <div class="carousel-slides" id="eventPhotosSlides">
+                    <!-- 活動照片由 JavaScript 動態載入 -->
+                </div>
+                <div class="carousel-dots" id="eventPhotosDots"></div>
+            </section>
+
+            <!-- 活動列表 -->
+            <div class="events-list" id="eventsList">
+                <!-- 活動由 JavaScript 動態載入 -->
+            </div>
+        </div>
+
+        <!-- ===== 更多頁面 ===== -->
+        <div class="page" id="page-more">
+            <div class="page-header">
+                <h2>📌 更多</h2>
+                <p class="page-subtitle">教會資訊與資源</p>
+            </div>
+
+            <!-- 公告完整列表 -->
+            <section class="info-card">
+                <div class="info-header">
+                    <span class="info-icon">📢</span>
+                    <span class="info-label">公告</span>
+                </div>
+                <div id="moreAnnouncements"></div>
+            </section>
+
+            <!-- 連結 -->
+            <section class="info-card">
+                <div class="info-row" onclick="showModal('about')">
+                    <span class="info-icon">📍</span>
+                    <span class="info-label">關於我們</span>
+                    <span class="info-arrow">→</span>
+                </div>
+                <div class="info-row" onclick="showModal('give')">
+                    <span class="info-icon">❤️</span>
+                    <span class="info-label">奉獻</span>
+                    <span class="info-arrow">→</span>
+                </div>
+                <div class="info-row" onclick="showToast('電子郵件訂閱功能開發中')">
+                    <span class="info-icon">✉️</span>
+                    <span class="info-label">電子郵件訂閱</span>
+                    <span class="info-arrow">→</span>
+                </div>
+                <div class="info-row" onclick="window.open('https://facebook.com','_blank')">
+                    <span class="info-icon">📘</span>
+                    <span class="info-label">Facebook</span>
+                    <span class="info-arrow">→</span>
+                </div>
+                <div class="info-row" onclick="window.open('https://ccacgranadahills.org','_blank')">
+                    <span class="info-icon">🌐</span>
+                    <span class="info-label">CCAC 網站</span>
+                    <span class="info-arrow">→</span>
+                </div>
+                <div class="info-row podcast-row" onclick="showPodcastModal()">
+                    <span class="info-icon">🎙️</span>
+                    <span class="info-label">播客訂閱 (RSS)</span>
+                    <span class="info-arrow">→</span>
+                </div>
+            </section>
+
+            <section class="about-text">
+                <p>CCAC 是一個以三種語言敬拜的基督身體：國語、粤語和英語。</p>
+                <p>我們是一群多元、友善、快樂的基督徒，發現神是奇妙、無限良善的。</p>
+                <p>在學習信靠和跟隨耶穌基督的過程中，我們相信找到了永恆喜樂的秘訣。在學習彼此相愛和愛所有人的過程中，我們尋求與世界分享這份喜樂。</p>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- ============ 底部導航（5 個按鈕） ============ -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchPage('home')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span>首頁</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('sermons')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <span>講道</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('bible')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 6h16M4 12h16M4 18h10"/>
+                <rect x="2" y="3" width="20" height="18" rx="2"/>
+            </svg>
+            <span>聖經</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('events')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span>活動</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('more')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"/>
+                <circle cx="19" cy="12" r="1"/>
+                <circle cx="5" cy="12" r="1"/>
+            </svg>
+            <span>更多</span>
+        </button>
+    </nav>
+
+    <!-- ============ 模態框 ============ -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- ============ Toast ============ -->
+    <div class="toast" id="toast"></div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCAC 教會 App — 管理員使用手冊</title>
+<style>
+  :root { --accent:#5B4FC8; --accent-light:#EEEBFB; --ink:#1F2430; --muted:#6B7280; --line:#E5E7EB; }
+  * { box-sizing:border-box; }
+  body { font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",-apple-system,"Segoe UI",sans-serif;
+         color:var(--ink); line-height:1.75; max-width:860px; margin:0 auto; padding:24px 20px 60px; background:#fff; }
+  .no-print .toolbar-btn { display:inline-block; }
+  .toolbar { position:sticky; top:0; z-index:9; text-align:right; padding:10px 0; background:rgba(255,255,255,.95); }
+  .toolbar button { background:var(--accent); color:#fff; border:0; border-radius:10px; padding:10px 18px;
+                    font-size:15px; cursor:pointer; box-shadow:0 2px 8px rgba(91,79,200,.35); }
+  .toolbar button:hover { filter:brightness(1.1); }
+  .cover { background:linear-gradient(135deg,#5B4FC8 0%,#7C6FE8 60%,#9A8FF2 100%); color:#fff;
+           border-radius:18px; padding:40px 36px; text-align:center; margin-bottom:28px; }
+  .cover-icon { font-size:52px; }
+  .cover h1 { margin:10px 0 6px; font-size:30px; letter-spacing:1px; }
+  .cover p { margin:4px 0; opacity:.92; font-size:14.5px; }
+  .cover .cover-url { font-weight:700; font-size:15.5px; }
+  .toc { background:var(--accent-light); border-radius:14px; padding:18px 26px; margin:0 0 8px; }
+  .toc h2 { margin:0 0 8px; font-size:17px; color:var(--accent); border:0; padding:0; }
+  .toc ol { margin:0; padding-left:22px; columns:2; column-gap:34px; font-size:14.5px; }
+  .toc li { margin:3px 0; break-inside:avoid; }
+  .toc a { color:var(--ink); text-decoration:none; }
+  h2 { color:var(--accent); font-size:21px; border-left:6px solid var(--accent); padding-left:12px;
+       margin:42px 0 14px; break-after:avoid; }
+  h3 { font-size:16.5px; margin:26px 0 8px; }
+  h3 { color:#374151; }
+  p, li { font-size:15px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0 18px; font-size:14px; }
+  th { background:var(--accent-light); color:#3D3396; text-align:left; }
+  th, td { border:1px solid var(--line); padding:8px 12px; vertical-align:top; }
+  tbody tr:nth-child(even) { background:#FAFAFE; }
+  tr { break-inside:avoid; }
+  .tip, .warn { border-radius:10px; padding:12px 16px; margin:14px 0; font-size:14.5px; break-inside:avoid; }
+  .tip { background:#F0F9FF; border-left:5px solid #0EA5E9; }
+  .warn { background:#FEF2F2; border-left:5px solid #EF4444; }
+  .steps { background:#F9FAFB; border:1px solid var(--line); border-radius:12px; padding:14px 20px; margin:12px 0; break-inside:avoid; }
+  code { background:#F3F4F6; border-radius:5px; padding:1px 7px; font-size:13.5px; color:#4338CA; }
+  .feed-url { display:block; background:#111827; color:#A5B4FC; border-radius:10px; padding:12px 16px;
+              font-family:Consolas,monospace; font-size:14px; text-align:center; margin:12px 0; break-inside:avoid; }
+  footer { margin-top:46px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12.5px; text-align:center; }
+  @media print {
+    body { padding:0; max-width:none; }
+    .toolbar { display:none; }
+    .cover { border-radius:0; padding:34px 30px; }
+    a { color:inherit; text-decoration:none; }
+    h2 { break-after:avoid; }
+    @page { size:A4; margin:16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar"><button class="toolbar-btn" onclick="window.print()">🖨️ 列印 / 儲存為 PDF</button></div>
+
+<div class="cover">
+  <div class="cover-icon">⛪</div>
+  <h1>CCAC 教會 App<br>管理員使用手冊</h1>
+  <p>適用對象：教會網站／App 的內容管理員（上傳講道、管理系列、公告等）</p>
+  <p class="cover-url">後台網址：https://ccac-api.ccac-church.workers.dev/admin/</p>
+  <p>本機測試：http://localhost:8787/admin/</p>
+  <p>最後更新：2026-09-05</p>
+</div>
+
+<nav class="toc">
+  <h2>目錄</h2>
+  <ol>
+    <li><a href="#sec1">登入與登出</a></li>
+    <li><a href="#sec2">認識儀表板</a></li>
+    <li><a href="#sec3">講道管理</a></li>
+    <li><a href="#sec4">系列管理</a></li>
+    <li><a href="#sec5">文檔管理（週報等）</a></li>
+    <li><a href="#sec6">活動管理</a></li>
+    <li><a href="#sec7">公告管理</a></li>
+    <li><a href="#sec8">播客 RSS Feed</a></li>
+    <li><a href="#sec9">常見問題與疑難排解</a></li>
+    <li><a href="#sec10">安全注意事項</a></li>
+  </ol>
+</nav>
+
+<h2 id="sec1">1. 登入與登出</h2>
+<ol>
+  <li>用瀏覽器（手機或電腦皆可）開啟後台網址。</li>
+  <li>輸入<strong>管理員密碼</strong>後按「登入」。密碼由系統管理員設定（Cloudflare 環境變數 <code>ADMIN_PASSWORD</code>）。可按輸入框右邊的 👁 按鈕顯示／隱藏密碼。</li>
+  <li>登入狀態會保留在瀏覽器中，下次開啟不必重新輸入。</li>
+  <li>離開時（尤其共用電腦）請按右上角「<strong>登出</strong>」。</li>
+</ol>
+<div class="tip">💡 建議把後台網址加到書籤／手機主畫面，方便每週更新講道。</div>
+
+<h2 id="sec2">2. 認識儀表板</h2>
+<p>登入後第一頁是儀表板：</p>
+<ul>
+  <li><strong>統計卡片</strong>：講道、文檔、活動、公告的數量。點卡片可直接跳到對應分頁。</li>
+  <li><strong>快速新增按鈕</strong>：🎬 新增講道、📚 新增系列、📄 上傳文檔、📅 新增活動、📢 新增公告。</li>
+  <li><strong>底部導覽列</strong>：講道、系列、文檔、活動、公告 五個分頁，隨時切換。</li>
+</ul>
+
+<h2 id="sec3">3. 講道管理</h2>
+
+<h3>3.1 講道列表（依系列分組）</h3>
+<p>「🎬 講道」分頁中，講道會<strong>依所屬系列分組</strong>顯示：</p>
+<ul>
+  <li>每組預設是<strong>收合</strong>的，只顯示 <code>▶ 系列名稱 … N 篇</code>。</li>
+  <li><strong>點一下組名即可展開／收合</strong>該系列的講道清單，避免清單過長。</li>
+  <li>展開後每篇講道顯示：標題、講員、日期，以及狀態標籤：</li>
+</ul>
+<table>
+  <tr><th>標籤</th><th>意義</th></tr>
+  <tr><td>🎬 影片 / 🎵 音頻</td><td>講道類型</td></tr>
+  <tr><td>▶ YouTube</td><td>有附 YouTube 影片</td></tr>
+  <tr><td>🎵 MP3</td><td>已上傳音頻檔</td></tr>
+  <tr><td>📄 講義</td><td>已上傳大綱 PDF</td></tr>
+  <tr><td>✅ 已發布 / ⛔ 隱藏</td><td>發布狀態</td></tr>
+</table>
+<p>沒有歸入系列的講道會收在「🎤 單次講道」組。</p>
+
+<h3>3.2 新增講道</h3>
+<p>點「🎬 新增講道」，填寫：</p>
+<table>
+  <tr><th>欄位</th><th>必填</th><th>說明</th></tr>
+  <tr><td>標題</td><td>✅</td><td>講道名稱，例如「信心的行走」</td></tr>
+  <tr><td>講員</td><td>✅</td><td>例如「陳大衛牧師」</td></tr>
+  <tr><td>日期</td><td>✅</td><td>講道日期</td></tr>
+  <tr><td>所屬系列</td><td>—</td><td>下拉選單；不選 = 歸入「單次講道」</td></tr>
+  <tr><td>YouTube 影片 ID</td><td>—</td><td>例如 <code>nq1e0g8jQpE</code>（可留空）</td></tr>
+  <tr><td>時長</td><td>—</td><td>例如 <code>42:18</code></td></tr>
+  <tr><td>類型</td><td>—</td><td>🎬 影片 / 🎵 音頻</td></tr>
+  <tr><td>講道簡介</td><td>—</td><td>顯示在播放頁的說明文字</td></tr>
+  <tr><td>🎵 MP3 音頻檔</td><td>—</td><td>按鈕選檔，<strong>上限 90MB</strong></td></tr>
+  <tr><td>📄 講道大綱 PDF</td><td>—</td><td>按鈕選檔，<strong>上限 20MB</strong></td></tr>
+</table>
+<div class="warn">⚠️ <strong>重要規則：YouTube ID 和 MP3 至少要有一個</strong>（聽眾總要有東西可看／聽）。只上傳 MP3 時，類型會自動設為「🎵 音頻」。</div>
+<div class="tip">💡 YouTube ID 取法：影片網址 <code>youtube.com/watch?v=</code> 後面的 11 碼字串。</div>
+
+<h3>3.3 編輯講道（含音頻／PDF 上傳）</h3>
+<p>點任一篇講道的 ✏️ 按鈕：</p>
+<ul>
+  <li>可修改所有基本欄位（標題、講員、系列、簡介、發布狀態…）。</li>
+  <li>頁面下方有兩個<strong>檔案區塊</strong>：</li>
+</ul>
+<div class="steps">
+  <p><strong>🎵 音頻檔 (MP3)</strong>：顯示目前檔名 →「⬆️ 上傳 / 更新 MP3」可新增或<strong>替換</strong>；已有音頻時可用「🗑️ 移除音頻」。</p>
+  <p><strong>📄 講道大綱 (PDF)</strong>：同上，可新增／替換／移除。</p>
+</div>
+<ul>
+  <li>上傳成功後視窗會自動重新整理顯示最新狀態。</li>
+  <li>記得按「💾 儲存修改」保存基本欄位的變更。</li>
+</ul>
+
+<h3>3.4 播放與刪除</h3>
+<ul>
+  <li>▶ 按鈕：直接開啟該講道的 YouTube 影片（僅限有 YouTube ID 的講道）。</li>
+  <li>🗑️ 按鈕：刪除講道（<strong>無法復原</strong>；已上傳的音頻/PDF 一併刪除）。</li>
+</ul>
+
+<h2 id="sec4">4. 系列管理</h2>
+<p>系列 = 一組有主題的講道（例如「天地揭秘系列」）。App 中聽眾會先看到系列清單（<strong>主標題＋副標題</strong>），點進去才看到每篇講道。</p>
+
+<h3>4.1 新增系列</h3>
+<p>點「📚 新增系列」：</p>
+<table>
+  <tr><th>欄位</th><th>必填</th><th>說明</th></tr>
+  <tr><td>系列名稱（主標題）</td><td>✅</td><td>例如「天地揭秘系列」</td></tr>
+  <tr><td>副標題</td><td>—</td><td>例如「啟示錄逐章查考」，顯示在主標題下方</td></tr>
+  <tr><td>系列描述</td><td>—</td><td>系列內頁頂部的簡介</td></tr>
+  <tr><td>排序</td><td>—</td><td>數字越小排越前（也可之後用 ▲▼ 調整）</td></tr>
+  <tr><td>🖼️ 封面圖</td><td>—</td><td>JPG/PNG/WEBP/GIF，<strong>上限 5MB</strong>；未上傳時 App 自動用漸層色封面</td></tr>
+</table>
+
+<h3>4.2 調整系列順序（列出優先順序）</h3>
+<p>「📚 系列」分頁中，每個系列前面有編號（1、2、3…）：</p>
+<ul>
+  <li>按 <strong>▲</strong> 把該系列<strong>上移</strong>（在 App 中排更前面）。</li>
+  <li>按 <strong>▼</strong> 把該系列<strong>下移</strong>。</li>
+  <li>排序立即保存，App 中的系列清單會照此順序顯示。</li>
+</ul>
+
+<h3>4.3 編輯系列</h3>
+<p>點 ✏️：可改名稱、副標題、描述、排序、發布狀態，以及「⬆️ 上傳 / 更新封面」替換封面圖。</p>
+
+<h3>4.4 刪除系列</h3>
+<p>點 🗑️ 刪除系列時：</p>
+<ul>
+  <li>系列下的講道<strong>不會被刪除</strong>，會自動變回「單次講道」。</li>
+  <li>封面圖會從雲端儲存移除。</li>
+  <li>操作無法復原，請確認後再刪。</li>
+</ul>
+<div class="tip">💡 建議流程：先建立系列 → 再新增講道並選入系列 → 最後用 ▲▼ 排好順序。</div>
+<h2 id="sec5">5. 文檔管理（週報等）</h2>
+<p>上傳週報、查經筆記、通訊、照片等，供會眾在 App 的「文檔」頁下載。</p>
+<p>點「📄 上傳文檔」：</p>
+<ul>
+  <li><strong>標題</strong>（必填）：例如「週報 2026-09-06」</li>
+  <li><strong>分類</strong>：📋 週報 / 📖 查經筆記 / ✉️ 通訊 / 🖼️ 照片 / 📁 其他</li>
+  <li><strong>檔案</strong>：PDF、JPG、PNG、GIF、WEBP、Word，<strong>上限 10MB</strong></li>
+</ul>
+<p>列表中每筆文檔可 ⬇️ 下載、✏️ 編輯、🗑️ 刪除。</p>
+
+<h2 id="sec6">6. 活動管理</h2>
+<p>App「活動」頁顯示的教會行事曆項目。</p>
+<p>點「📅 新增活動」：</p>
+<ul>
+  <li><strong>標題 / 日期 / 星期 / 時間 / 地點</strong>（皆必填）</li>
+  <li>選日期後，月曆卡片上的「幾月幾日」會自動帶入</li>
+  <li><strong>發布狀態</strong>：✅ 已發布 / ⛔ 隱藏</li>
+</ul>
+<p>列表中可 ✏️ 編輯、🗑️ 刪除。</p>
+
+<h2 id="sec7">7. 公告管理</h2>
+<p>App 首頁頂部的跑馬公告（可附彈窗詳細內容）。</p>
+<p>點「📢 新增公告」：</p>
+<ul>
+  <li><strong>標題</strong>（必填）、<strong>描述</strong>（必填）</li>
+  <li><strong>時間標籤</strong>：例如「2小時前」，留空顯示「剛剛」</li>
+  <li><strong>彈窗詳細內容</strong>：點開公告後顯示的詳細文字（留空則用描述）</li>
+  <li><strong>發布狀態</strong>：✅ 已發布 / ⛔ 隱藏</li>
+</ul>
+<p>列表中可 ✏️ 編輯、🗑️ 刪除。</p>
+
+<h2 id="sec8">8. 播客 RSS Feed</h2>
+<p>有上傳 <strong>MP3</strong> 且<strong>已發布</strong>的講道會自動進入播客 Feed，<strong>不需另外操作</strong>：</p>
+<span class="feed-url">https://ccac-api.ccac-church.workers.dev/feed.xml</span>
+
+<h3>提交到播客平台（只需做一次）</h3>
+<div class="steps">
+  <p><strong>1. Apple Podcasts</strong>：<a href="https://podcastsconnect.apple.com/">Podcasts Connect</a> → Apple ID 登入 →「＋」→ 貼上 Feed 網址 → 審核 1–5 個工作天</p>
+  <p><strong>2. Spotify</strong>：<a href="https://creators.spotify.com/">Spotify for Creators</a> → 新增節目 → 貼上 Feed 網址</p>
+  <p><strong>3. 其他平台</strong>（iHeartRadio、TuneIn…）同樣貼上此網址即可</p>
+</div>
+<h3>注意事項</h3>
+<ul>
+  <li>之後每次上傳新講道（有 MP3、已發布），各平台會在數小時內自動抓取。</li>
+  <li>Feed 的節目封面取自系列封面或講道縮圖，建議至少上傳一張。</li>
+  <li>隱藏（⛔）的講道不會出現在 Feed 中。</li>
+</ul>
+<h2 id="sec9">9. 常見問題與疑難排解</h2>
+<table>
+  <tr><th style="width:45%;">問題</th><th>解決方法</th></tr>
+  <tr><td><strong>Q1：上傳 MP3 到一半失敗？</strong></td><td>檔案請小於 90MB。若講道已建立但檔案上傳失敗，會出現提示 → 到該講道的「編輯」重新上傳即可。</td></tr>
+  <tr><td><strong>Q2：上傳後 App 看不到新講道？</strong></td><td>① 確認「發布狀態」是 ✅ 已發布；② App 下拉重新整理；③ 網頁版按 Ctrl+F5 強制更新。</td></tr>
+  <tr><td><strong>Q3：PDF 點開是空白或無法檢視？</strong></td><td>聽眾裝置會用內建 PDF 檢視器開啟；請確認 PDF 未加密、檔案小於 20MB。</td></tr>
+  <tr><td><strong>Q4：只想讓講道出現在 Feed、不想在 App 出現（或反之）？</strong></td><td>兩者都以「已發布」為準；若要暫時下架，改為 ⛔ 隱藏即可（Feed 與 App 同步消失）。</td></tr>
+  <tr><td><strong>Q5：系列刪掉了，講道會不見嗎？</strong></td><td>不會。講道會自動歸到「單次講道」，可再編輯指派到新的系列。</td></tr>
+  <tr><td><strong>Q6：排序按了沒反應？</strong></td><td>請確認網路正常；排序成功會顯示「✅ 排序已更新！」。失敗請重試。</td></tr>
+</table>
+
+<h2 id="sec10">10. 安全注意事項</h2>
+<ul>
+  <li><strong>請勿把密碼告訴不需使用後台的人</strong>；密碼更改請聯絡系統管理員（Cloudflare <code>ADMIN_PASSWORD</code> 變數）。</li>
+  <li>目前登入頁面下方有密碼提示文字（<code>public/admin/index.html</code> 內），<strong>正式上線前建議移除該行</strong>。</li>
+  <li>共用電腦使用後，請務必按「登出」。</li>
+  <li>上傳檔案請使用教會自行拍攝／製作或已授權的內容，避免版權問題。</li>
+</ul>
+
+<footer>CCAC Granada Hills 教會 App — 管理員使用手冊 v1.0（2026-09-05）<br>技術支援請聯絡系統管理員</footer>
+
+</body>
+</html>

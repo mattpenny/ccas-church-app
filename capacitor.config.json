@@ -1,0 +1,10 @@
+{
+  "appId": "com.ccas.churchapp",
+  "appName": "CCAS App",
+  "webDir": "public",
+  "server": {
+    "url": "https://ccac-api.ccac-church.workers.dev",
+    "androidScheme": "https",
+    "allowNavigation": ["ccac-api.ccac-church.workers.dev"]
+  }
+}

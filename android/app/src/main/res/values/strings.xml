@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CCAS Church App</string>
+    <string name="title_activity_main">CCAS Church App</string>
+    <string name="package_name">com.ccas.churchapp</string>
+    <string name="custom_url_scheme">com.ccas.churchapp</string>
+</resources>

@@ -1,0 +1,20 @@
+﻿name = "ccac-api"
+main = "backend/src/index.js"
+compatibility_date = "2024-12-18"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ccac-db"
+database_id = "4196686c-58b4-43fe-8328-c3f10daae70d"
+migrations_dir = "backend/migrations"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "ccac-storage"
+
+[vars]
+ADMIN_PASSWORD = "Dawn2026"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"

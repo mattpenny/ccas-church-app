@@ -1,0 +1,601 @@
+{
+ "version": "kjv",
+ "label": "King James Version",
+ "source": "Public Domain, from ibibles.net",
+ "books": [
+  {
+   "id": 1,
+   "zh": "Genesis",
+   "en": "Genesis",
+   "testament": "OT",
+   "chapterCount": 50,
+   "verseCount": 1533,
+   "file": "/bible/kjv/001.json"
+  },
+  {
+   "id": 2,
+   "zh": "Exodus",
+   "en": "Exodus",
+   "testament": "OT",
+   "chapterCount": 40,
+   "verseCount": 1213,
+   "file": "/bible/kjv/002.json"
+  },
+  {
+   "id": 3,
+   "zh": "Leviticus",
+   "en": "Leviticus",
+   "testament": "OT",
+   "chapterCount": 27,
+   "verseCount": 859,
+   "file": "/bible/kjv/003.json"
+  },
+  {
+   "id": 4,
+   "zh": "Numbers",
+   "en": "Numbers",
+   "testament": "OT",
+   "chapterCount": 36,
+   "verseCount": 1288,
+   "file": "/bible/kjv/004.json"
+  },
+  {
+   "id": 5,
+   "zh": "Deuteronomy",
+   "en": "Deuteronomy",
+   "testament": "OT",
+   "chapterCount": 34,
+   "verseCount": 959,
+   "file": "/bible/kjv/005.json"
+  },
+  {
+   "id": 6,
+   "zh": "Joshua",
+   "en": "Joshua",
+   "testament": "OT",
+   "chapterCount": 24,
+   "verseCount": 658,
+   "file": "/bible/kjv/006.json"
+  },
+  {
+   "id": 7,
+   "zh": "Judges",
+   "en": "Judges",
+   "testament": "OT",
+   "chapterCount": 21,
+   "verseCount": 618,
+   "file": "/bible/kjv/007.json"
+  },
+  {
+   "id": 8,
+   "zh": "Ruth",
+   "en": "Ruth",
+   "testament": "OT",
+   "chapterCount": 4,
+   "verseCount": 85,
+   "file": "/bible/kjv/008.json"
+  },
+  {
+   "id": 9,
+   "zh": "1 Samuel",
+   "en": "Samuel1",
+   "testament": "OT",
+   "chapterCount": 31,
+   "verseCount": 810,
+   "file": "/bible/kjv/009.json"
+  },
+  {
+   "id": 10,
+   "zh": "2 Samuel",
+   "en": "Samuel2",
+   "testament": "OT",
+   "chapterCount": 24,
+   "verseCount": 695,
+   "file": "/bible/kjv/010.json"
+  },
+  {
+   "id": 11,
+   "zh": "1 Kings",
+   "en": "Kings1",
+   "testament": "OT",
+   "chapterCount": 22,
+   "verseCount": 816,
+   "file": "/bible/kjv/011.json"
+  },
+  {
+   "id": 12,
+   "zh": "2 Kings",
+   "en": "Kings2",
+   "testament": "OT",
+   "chapterCount": 25,
+   "verseCount": 719,
+   "file": "/bible/kjv/012.json"
+  },
+  {
+   "id": 13,
+   "zh": "1 Chronicles",
+   "en": "Chronicles1",
+   "testament": "OT",
+   "chapterCount": 29,
+   "verseCount": 942,
+   "file": "/bible/kjv/013.json"
+  },
+  {
+   "id": 14,
+   "zh": "2 Chronicles",
+   "en": "Chronicles2",
+   "testament": "OT",
+   "chapterCount": 36,
+   "verseCount": 822,
+   "file": "/bible/kjv/014.json"
+  },
+  {
+   "id": 15,
+   "zh": "Ezra",
+   "en": "Ezra",
+   "testament": "OT",
+   "chapterCount": 10,
+   "verseCount": 280,
+   "file": "/bible/kjv/015.json"
+  },
+  {
+   "id": 16,
+   "zh": "Nehemiah",
+   "en": "Nehemiah",
+   "testament": "OT",
+   "chapterCount": 13,
+   "verseCount": 406,
+   "file": "/bible/kjv/016.json"
+  },
+  {
+   "id": 17,
+   "zh": "Esther",
+   "en": "Esther",
+   "testament": "OT",
+   "chapterCount": 10,
+   "verseCount": 167,
+   "file": "/bible/kjv/017.json"
+  },
+  {
+   "id": 18,
+   "zh": "Job",
+   "en": "Job",
+   "testament": "OT",
+   "chapterCount": 42,
+   "verseCount": 1070,
+   "file": "/bible/kjv/018.json"
+  },
+  {
+   "id": 19,
+   "zh": "Psalms",
+   "en": "Psalms",
+   "testament": "OT",
+   "chapterCount": 150,
+   "verseCount": 2461,
+   "file": "/bible/kjv/019.json"
+  },
+  {
+   "id": 20,
+   "zh": "Proverbs",
+   "en": "Proverbs",
+   "testament": "OT",
+   "chapterCount": 31,
+   "verseCount": 915,
+   "file": "/bible/kjv/020.json"
+  },
+  {
+   "id": 21,
+   "zh": "Ecclesiastes",
+   "en": "Ecclesiastes",
+   "testament": "OT",
+   "chapterCount": 12,
+   "verseCount": 222,
+   "file": "/bible/kjv/021.json"
+  },
+  {
+   "id": 22,
+   "zh": "Songs",
+   "en": "Songs",
+   "testament": "OT",
+   "chapterCount": 8,
+   "verseCount": 117,
+   "file": "/bible/kjv/022.json"
+  },
+  {
+   "id": 23,
+   "zh": "Isaiah",
+   "en": "Isaiah",
+   "testament": "OT",
+   "chapterCount": 66,
+   "verseCount": 1292,
+   "file": "/bible/kjv/023.json"
+  },
+  {
+   "id": 24,
+   "zh": "Jeremiah",
+   "en": "Jeremiah",
+   "testament": "OT",
+   "chapterCount": 52,
+   "verseCount": 1364,
+   "file": "/bible/kjv/024.json"
+  },
+  {
+   "id": 25,
+   "zh": "Lamentations",
+   "en": "Lamentations",
+   "testament": "OT",
+   "chapterCount": 5,
+   "verseCount": 154,
+   "file": "/bible/kjv/025.json"
+  },
+  {
+   "id": 26,
+   "zh": "Ezekiel",
+   "en": "Ezekiel",
+   "testament": "OT",
+   "chapterCount": 48,
+   "verseCount": 1273,
+   "file": "/bible/kjv/026.json"
+  },
+  {
+   "id": 27,
+   "zh": "Daniel",
+   "en": "Daniel",
+   "testament": "OT",
+   "chapterCount": 12,
+   "verseCount": 357,
+   "file": "/bible/kjv/027.json"
+  },
+  {
+   "id": 28,
+   "zh": "Hosea",
+   "en": "Hosea",
+   "testament": "OT",
+   "chapterCount": 14,
+   "verseCount": 197,
+   "file": "/bible/kjv/028.json"
+  },
+  {
+   "id": 29,
+   "zh": "Joel",
+   "en": "Joel",
+   "testament": "OT",
+   "chapterCount": 3,
+   "verseCount": 73,
+   "file": "/bible/kjv/029.json"
+  },
+  {
+   "id": 30,
+   "zh": "Amos",
+   "en": "Amos",
+   "testament": "OT",
+   "chapterCount": 9,
+   "verseCount": 146,
+   "file": "/bible/kjv/030.json"
+  },
+  {
+   "id": 31,
+   "zh": "Obadiah",
+   "en": "Obadiah",
+   "testament": "OT",
+   "chapterCount": 1,
+   "verseCount": 21,
+   "file": "/bible/kjv/031.json"
+  },
+  {
+   "id": 32,
+   "zh": "Jonah",
+   "en": "Jonah",
+   "testament": "OT",
+   "chapterCount": 4,
+   "verseCount": 48,
+   "file": "/bible/kjv/032.json"
+  },
+  {
+   "id": 33,
+   "zh": "Micah",
+   "en": "Micah",
+   "testament": "OT",
+   "chapterCount": 7,
+   "verseCount": 105,
+   "file": "/bible/kjv/033.json"
+  },
+  {
+   "id": 34,
+   "zh": "Nahum",
+   "en": "Nahum",
+   "testament": "OT",
+   "chapterCount": 3,
+   "verseCount": 47,
+   "file": "/bible/kjv/034.json"
+  },
+  {
+   "id": 35,
+   "zh": "Habakkuk",
+   "en": "Habakkuk",
+   "testament": "OT",
+   "chapterCount": 3,
+   "verseCount": 56,
+   "file": "/bible/kjv/035.json"
+  },
+  {
+   "id": 36,
+   "zh": "Zephaniah",
+   "en": "Zephaniah",
+   "testament": "OT",
+   "chapterCount": 3,
+   "verseCount": 53,
+   "file": "/bible/kjv/036.json"
+  },
+  {
+   "id": 37,
+   "zh": "Haggai",
+   "en": "Haggai",
+   "testament": "OT",
+   "chapterCount": 2,
+   "verseCount": 38,
+   "file": "/bible/kjv/037.json"
+  },
+  {
+   "id": 38,
+   "zh": "Zechariah",
+   "en": "Zechariah",
+   "testament": "OT",
+   "chapterCount": 14,
+   "verseCount": 211,
+   "file": "/bible/kjv/038.json"
+  },
+  {
+   "id": 39,
+   "zh": "Malachi",
+   "en": "Malachi",
+   "testament": "OT",
+   "chapterCount": 4,
+   "verseCount": 55,
+   "file": "/bible/kjv/039.json"
+  },
+  {
+   "id": 101,
+   "zh": "Matthew",
+   "en": "Matthew",
+   "testament": "NT",
+   "chapterCount": 28,
+   "verseCount": 1071,
+   "file": "/bible/kjv/101.json"
+  },
+  {
+   "id": 102,
+   "zh": "Mark",
+   "en": "Mark",
+   "testament": "NT",
+   "chapterCount": 16,
+   "verseCount": 678,
+   "file": "/bible/kjv/102.json"
+  },
+  {
+   "id": 103,
+   "zh": "Luke",
+   "en": "Luke",
+   "testament": "NT",
+   "chapterCount": 24,
+   "verseCount": 1151,
+   "file": "/bible/kjv/103.json"
+  },
+  {
+   "id": 104,
+   "zh": "John",
+   "en": "John",
+   "testament": "NT",
+   "chapterCount": 21,
+   "verseCount": 879,
+   "file": "/bible/kjv/104.json"
+  },
+  {
+   "id": 105,
+   "zh": "Acts",
+   "en": "Acts",
+   "testament": "NT",
+   "chapterCount": 28,
+   "verseCount": 1007,
+   "file": "/bible/kjv/105.json"
+  },
+  {
+   "id": 106,
+   "zh": "Romans",
+   "en": "Romans",
+   "testament": "NT",
+   "chapterCount": 16,
+   "verseCount": 433,
+   "file": "/bible/kjv/106.json"
+  },
+  {
+   "id": 107,
+   "zh": "1 Corinthians",
+   "en": "Corinthians1",
+   "testament": "NT",
+   "chapterCount": 16,
+   "verseCount": 437,
+   "file": "/bible/kjv/107.json"
+  },
+  {
+   "id": 108,
+   "zh": "2 Corinthians",
+   "en": "Corinthians2",
+   "testament": "NT",
+   "chapterCount": 13,
+   "verseCount": 257,
+   "file": "/bible/kjv/108.json"
+  },
+  {
+   "id": 109,
+   "zh": "Galatians",
+   "en": "Galatians",
+   "testament": "NT",
+   "chapterCount": 6,
+   "verseCount": 149,
+   "file": "/bible/kjv/109.json"
+  },
+  {
+   "id": 110,
+   "zh": "Ephesians",
+   "en": "Ephesians",
+   "testament": "NT",
+   "chapterCount": 6,
+   "verseCount": 155,
+   "file": "/bible/kjv/110.json"
+  },
+  {
+   "id": 111,
+   "zh": "Philippians",
+   "en": "Philippians",
+   "testament": "NT",
+   "chapterCount": 4,
+   "verseCount": 104,
+   "file": "/bible/kjv/111.json"
+  },
+  {
+   "id": 112,
+   "zh": "Colossians",
+   "en": "Colossians",
+   "testament": "NT",
+   "chapterCount": 4,
+   "verseCount": 95,
+   "file": "/bible/kjv/112.json"
+  },
+  {
+   "id": 113,
+   "zh": "1 Thessalonians",
+   "en": "Thessalonians1",
+   "testament": "NT",
+   "chapterCount": 5,
+   "verseCount": 89,
+   "file": "/bible/kjv/113.json"
+  },
+  {
+   "id": 114,
+   "zh": "2 Thessalonians",
+   "en": "Thessalonians2",
+   "testament": "NT",
+   "chapterCount": 3,
+   "verseCount": 47,
+   "file": "/bible/kjv/114.json"
+  },
+  {
+   "id": 115,
+   "zh": "1 Timothy",
+   "en": "Timothy1",
+   "testament": "NT",
+   "chapterCount": 6,
+   "verseCount": 113,
+   "file": "/bible/kjv/115.json"
+  },
+  {
+   "id": 116,
+   "zh": "2 Timothy",
+   "en": "Timothy2",
+   "testament": "NT",
+   "chapterCount": 4,
+   "verseCount": 83,
+   "file": "/bible/kjv/116.json"
+  },
+  {
+   "id": 117,
+   "zh": "Titus",
+   "en": "Titus",
+   "testament": "NT",
+   "chapterCount": 3,
+   "verseCount": 46,
+   "file": "/bible/kjv/117.json"
+  },
+  {
+   "id": 118,
+   "zh": "Philemon",
+   "en": "Philemon",
+   "testament": "NT",
+   "chapterCount": 1,
+   "verseCount": 25,
+   "file": "/bible/kjv/118.json"
+  },
+  {
+   "id": 119,
+   "zh": "Hebrews",
+   "en": "Hebrews",
+   "testament": "NT",
+   "chapterCount": 13,
+   "verseCount": 303,
+   "file": "/bible/kjv/119.json"
+  },
+  {
+   "id": 120,
+   "zh": "James",
+   "en": "James",
+   "testament": "NT",
+   "chapterCount": 5,
+   "verseCount": 108,
+   "file": "/bible/kjv/120.json"
+  },
+  {
+   "id": 121,
+   "zh": "1 Peter",
+   "en": "Peter1",
+   "testament": "NT",
+   "chapterCount": 5,
+   "verseCount": 105,
+   "file": "/bible/kjv/121.json"
+  },
+  {
+   "id": 122,
+   "zh": "2 Peter",
+   "en": "Peter2",
+   "testament": "NT",
+   "chapterCount": 3,
+   "verseCount": 61,
+   "file": "/bible/kjv/122.json"
+  },
+  {
+   "id": 123,
+   "zh": "1 John",
+   "en": "John1",
+   "testament": "NT",
+   "chapterCount": 5,
+   "verseCount": 105,
+   "file": "/bible/kjv/123.json"
+  },
+  {
+   "id": 124,
+   "zh": "2 John",
+   "en": "John2",
+   "testament": "NT",
+   "chapterCount": 1,
+   "verseCount": 13,
+   "file": "/bible/kjv/124.json"
+  },
+  {
+   "id": 125,
+   "zh": "3 John",
+   "en": "John3",
+   "testament": "NT",
+   "chapterCount": 1,
+   "verseCount": 14,
+   "file": "/bible/kjv/125.json"
+  },
+  {
+   "id": 126,
+   "zh": "Jude",
+   "en": "Jude",
+   "testament": "NT",
+   "chapterCount": 1,
+   "verseCount": 25,
+   "file": "/bible/kjv/126.json"
+  },
+  {
+   "id": 127,
+   "zh": "Revelation",
+   "en": "Revelation",
+   "testament": "NT",
+   "chapterCount": 22,
+   "verseCount": 404,
+   "file": "/bible/kjv/127.json"
+  }
+ ]
+}
