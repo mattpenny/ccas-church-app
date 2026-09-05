@@ -1,10 +1,13 @@
 {
-  "appId": "com.ccas.churchapp",
-  "appName": "CCAS App",
-  "webDir": "public",
-  "server": {
-    "url": "https://ccac-api.ccac-church.workers.dev",
-    "androidScheme": "https",
-    "allowNavigation": ["ccac-api.ccac-church.workers.dev"]
-  }
+    "appId":  "com.ccas.churchapp",
+    "webDir":  "public",
+    "appName":  "CCAS App",
+    "server":  {
+                   "cleartext":  true,
+                   "url":  "https://ccac-api.ccac-church.workers.dev",
+                   "allowNavigation":  [
+                                           "ccac-api.ccac-church.workers.dev"
+                                       ],
+                   "androidScheme":  "https"
+               }
 }
