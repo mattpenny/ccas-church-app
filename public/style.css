@@ -1859,7 +1859,8 @@ body {
 .series-group-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
+    padding: 16px;
 }
 .series-group {
     background: var(--card-bg, #ffffff);
@@ -1900,11 +1901,6 @@ body {
 }
 
 /* ===== Series list rows (main title + subtitle) ===== */
-.series-rows {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
 .series-row {
     display: flex;
     align-items: center;

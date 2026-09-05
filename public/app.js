@@ -1070,7 +1070,7 @@ async function renderSermons() {
     });
 
     // 只列「主標題 + 副標題」條目（不展開講道內容，點擊進入系列內頁）
-    let html = '<div class="series-rows">';
+    let html = '';
     publishedSeries.forEach(series => {
         const items = bySeries.get(series.id) || [];
         const sub = series.subtitle || (items.length ? `${items.length} 篇講道` : '尚未上傳');
@@ -1097,7 +1097,6 @@ async function renderSermons() {
             </div>`;
     }
 
-    html += '</div>';
     container.innerHTML = html || '<p class="empty-hint">尚無講道資料</p>';
 }
 
