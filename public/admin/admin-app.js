@@ -12,6 +12,29 @@ const API_URL = IS_NATIVE_APP ? 'https://ccac-api.ccac-church.workers.dev' : '';
 let token = localStorage.getItem('adminToken');
 let currentTab = 'sermons';
 
+// ========================================
+// 快取破壞工具函式 - 強制每次都取得最新內容
+// ========================================
+
+/**
+ * 產生帶有快取破壞參數的 URL
+ * 在 Android WebView 中，後端設定的 Cache-Control 過長，導致內容不會更新
+ * 加入 timestamp 確保每次請求都是唯一 URL，繞過快取
+ */
+function cacheBust(url) {
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}_cb=${Date.now()}`;
+}
+
+/**
+ * 帶有快取破壞的 fetch 包裝函式
+ * 所有 API 呼叫都應該使用此函式，確保取得最新資料
+ */
+async function cachedFetch(url, options = {}) {
+    const cacheBustedUrl = cacheBust(url);
+    return fetch(cacheBustedUrl, options);
+}
+
 // ============================================================
 // INITIALIZATION
 // ============================================================
@@ -92,7 +115,7 @@ function login() {
         return;
     }
 
-    fetch(`${API_URL}/api/auth/login`, {
+    cachedFetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: pwd })
@@ -176,7 +199,7 @@ function loadStats() {
     ];
 
     endpoints.forEach(({ id, url }) => {
-        fetch(`${API_URL}${url}`)
+        cachedFetch(`${API_URL}${url}`)
             .then(res => res.json())
             .then(data => {
                 const el = document.getElementById(id);
@@ -257,10 +280,10 @@ function toggleSermonGroup(key) {
 
 function loadSermons() {
     Promise.all([
-        fetch(`${API_URL}/api/sermons`, {
+        cachedFetch(`${API_URL}/api/sermons`, {
             headers: { 'Authorization': `Bearer ${token}` }
         }).then(res => res.json()),
-        fetch(`${API_URL}/api/series`, {
+        cachedFetch(`${API_URL}/api/series`, {
             headers: { 'Authorization': `Bearer ${token}` }
         }).then(res => res.json()).catch(() => ({ data: [] }))
     ])
@@ -367,7 +390,7 @@ function playSermon(videoId) {
 // ============================================================
 
 function editSermon(id) {
-    fetch(`${API_URL}/api/sermons/${id}`)
+    cachedFetch(`${API_URL}/api/sermons/${id}`)
         .then(res => res.json())
         .then(data => {
             if (data.success) {
@@ -380,7 +403,7 @@ function editSermon(id) {
 }
 
 function editEvent(id) {
-    fetch(`${API_URL}/api/events/${id}`)
+    cachedFetch(`${API_URL}/api/events/${id}`)
         .then(res => res.json())
         .then(data => {
             if (data.success) {
@@ -393,7 +416,7 @@ function editEvent(id) {
 }
 
 function editAnnouncement(id) {
-    fetch(`${API_URL}/api/announcements/${id}`)
+    cachedFetch(`${API_URL}/api/announcements/${id}`)
         .then(res => res.json())
         .then(data => {
             if (data.success) {
@@ -644,7 +667,7 @@ function updateSermon(id) {
         return;
     }
     
-    fetch(`${API_URL}/api/sermons/${id}`, {
+    cachedFetch(`${API_URL}/api/sermons/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -702,7 +725,7 @@ function updateEvent(id) {
         return;
     }
     
-    fetch(`${API_URL}/api/events/${id}`, {
+    cachedFetch(`${API_URL}/api/events/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -747,7 +770,7 @@ function updateAnnouncement(id) {
         return;
     }
     
-    fetch(`${API_URL}/api/announcements/${id}`, {
+    cachedFetch(`${API_URL}/api/announcements/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -776,7 +799,7 @@ function updateAnnouncement(id) {
 let seriesOrderCache = [];
 
 function loadSeries() {
-    fetch(`${API_URL}/api/series`, {
+    cachedFetch(`${API_URL}/api/series`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => res.json())
@@ -838,7 +861,7 @@ function moveSeries(id, dir) {
 
     showToast('⏳ 正在更新排序...');
 
-    fetch(`${API_URL}/api/series/reorder`, {
+    cachedFetch(`${API_URL}/api/series/reorder`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -859,7 +882,7 @@ function moveSeries(id, dir) {
 }
 
 function editSeries(id) {
-    fetch(`${API_URL}/api/series/${id}`, {
+    cachedFetch(`${API_URL}/api/series/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => res.json())
@@ -889,7 +912,7 @@ function submitSeries() {
 
     showToast('⏳ 正在建立系列...');
 
-    fetch(`${API_URL}/api/series`, {
+    cachedFetch(`${API_URL}/api/series`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1018,7 +1041,7 @@ function showPickedFile(inputId, infoId) {
 function populateSeriesSelect(selectId, selectedId) {
     const sel = document.getElementById(selectId);
     if (!sel) return;
-    fetch(`${API_URL}/api/series`, {
+    cachedFetch(`${API_URL}/api/series`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => res.json())
@@ -1044,7 +1067,7 @@ function uploadSermonAssetRequest(id, kind, file) {
     const formData = new FormData();
     // 後端欄位名：音頻為 'audio'，PDF 為 'pdf'
     formData.append(kind === 'audio' ? 'audio' : 'pdf', file);
-    return fetch(`${API_URL}/api/sermons/${id}/${kind}`, {
+    return cachedFetch(`${API_URL}/api/sermons/${id}/${kind}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -1087,7 +1110,7 @@ function uploadSermonAsset(id, kind) {
 function deleteSermonAsset(id, kind) {
     if (!confirm(`確定要移除這個${kind === 'audio' ? '音頻檔' : '講道大綱'}嗎？`)) return;
 
-    fetch(`${API_URL}/api/sermons/${id}/${kind}`, {
+    cachedFetch(`${API_URL}/api/sermons/${id}/${kind}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -1108,7 +1131,7 @@ function deleteSermonAsset(id, kind) {
 // ============================================================
 
 function loadDocuments() {
-    fetch(`${API_URL}/api/documents`)
+    cachedFetch(`${API_URL}/api/documents`)
         .then(res => res.json())
         .then(data => {
             const container = document.getElementById('documentsList');
@@ -1168,7 +1191,7 @@ function loadDocuments() {
 // ============================================================
 
 function loadEvents() {
-    fetch(`${API_URL}/api/events`)
+    cachedFetch(`${API_URL}/api/events`)
         .then(res => res.json())
         .then(data => {
             const container = document.getElementById('eventsList');
@@ -1215,7 +1238,7 @@ function loadEvents() {
 // ============================================================
 
 function loadAnnouncements() {
-    fetch(`${API_URL}/api/announcements`)
+    cachedFetch(`${API_URL}/api/announcements`)
         .then(res => res.json())
         .then(data => {
             const container = document.getElementById('announcementsList');
@@ -1517,7 +1540,7 @@ function submitSermon() {
     
     showToast('⏳ 正在上傳講道...');
     
-    fetch(`${API_URL}/api/sermons`, {
+    cachedFetch(`${API_URL}/api/sermons`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1600,7 +1623,7 @@ function submitDocument() {
     formData.append('file', fileVal);
     formData.append('category', catVal);
     
-    fetch(`${API_URL}/api/documents/upload`, {
+    cachedFetch(`${API_URL}/api/documents/upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -1650,7 +1673,7 @@ function submitEvent() {
         return;
     }
     
-    fetch(`${API_URL}/api/events`, {
+    cachedFetch(`${API_URL}/api/events`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1692,7 +1715,7 @@ function submitAnnouncement() {
         return;
     }
     
-    fetch(`${API_URL}/api/announcements`, {
+    cachedFetch(`${API_URL}/api/announcements`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1731,7 +1754,7 @@ function deleteItem(type, id) {
     
     const endpoint = type === 'series' ? `${API_URL}/api/series/${id}` : `${API_URL}/api/${type}s/${id}`;
     
-    fetch(endpoint, {
+    cachedFetch(endpoint, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
     })

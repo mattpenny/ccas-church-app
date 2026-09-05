@@ -11,6 +11,29 @@ const IS_NATIVE_APP = typeof window !== 'undefined' && !!(window.Capacitor && (
 const API_URL = IS_NATIVE_APP ? 'https://ccac-api.ccac-church.workers.dev' : '';
 
 // ========================================
+// 快取破壞工具函式 - 強制每次都取得最新內容
+// ========================================
+
+/**
+ * 產生帶有快取破壞參數的 URL
+ * 在 Android WebView 中，後端設定的 Cache-Control 過長，導致內容不會更新
+ * 加入 timestamp 確保每次請求都是唯一 URL，繞過快取
+ */
+function cacheBust(url) {
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}_cb=${Date.now()}`;
+}
+
+/**
+ * 帶有快取破壞的 fetch 包裝函式
+ * 所有 API 呼叫都應該使用此函式，確保取得最新資料
+ */
+async function cachedFetch(url, options = {}) {
+    const cacheBustedUrl = cacheBust(url);
+    return fetch(cacheBustedUrl, options);
+}
+
+// ========================================
 // 圖片輪播設定（首頁）
 // ========================================
 
@@ -39,7 +62,7 @@ async function initCarousel() {
 
     // 嘗試從後端載入照片
     try {
-        const response = await fetch(`${API_URL}/api/documents?category=photo&limit=20`);
+        const response = await cachedFetch(`${API_URL}/api/documents?category=photo&limit=20`);
         const data = await response.json();
         
         if (data.success && data.data && data.data.length > 0) {
@@ -192,7 +215,7 @@ async function loadEventPhotos() {
     if (!container) return;
     
     try {
-        const response = await fetch(`${API_URL}/api/documents?category=photo&limit=20`);
+        const response = await cachedFetch(`${API_URL}/api/documents?category=photo&limit=20`);
         const data = await response.json();
         
         if (data.success && data.data && data.data.length > 0) {
@@ -332,7 +355,7 @@ function switchPage(page) {
 
 async function fetchAPI(endpoint, options = {}) {
     try {
-        const url = `${API_URL}${endpoint}?t=${Date.now()}`;
+        const url = cacheBust(`${API_URL}${endpoint}`);
         const res = await fetch(url, {
             ...options,
             headers: {
@@ -682,7 +705,7 @@ async function loadBibleDocs() {
     const section = document.getElementById('bibleDocsSection');
     if (!section) return;
     try {
-        const response = await fetch(`${API_URL}/api/documents?category=study&limit=20`);
+        const response = await cachedFetch(`${API_URL}/api/documents?category=study&limit=20`);
         const data = await response.json();
         const docs = (data.data || []).filter(d => d.published !== 0);
         if (docs.length === 0) { section.innerHTML = ''; return; }
@@ -836,7 +859,7 @@ async function showEventDetail(eventId) {
 // ========================================
 
 function openNewsletter() {
-    fetch(`${API_URL}/api/documents?category=bulletin&limit=1`)
+    cachedFetch(`${API_URL}/api/documents?category=bulletin&limit=1`)
         .then(res => res.json())
         .then(data => {
             if (data.success && data.data && data.data.length > 0) {

@@ -1,6 +1,7 @@
 ﻿name = "ccac-api"
 main = "backend/src/index.js"
 compatibility_date = "2024-12-18"
+account_id = "8a58d0e5cc89674110c267b7bcdeff50"
 
 [[d1_databases]]
 binding = "DB"
