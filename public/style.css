@@ -281,11 +281,11 @@ body {
 }
 
 /* ===== Small left/right padding for all pages ===== */
-#page-home > section,
+#page-home > section:not(.sermon-outline-card):not(.newsletter-card):not(.give-card),
 #page-home > div:not(.page-header),
 #page-events > section,
 #page-events > div:not(.page-header),
-#page-more > section,
+#page-more > section:not(.info-card),
 #page-more > div:not(.page-header) {
     padding-left: 12px;
     padding-right: 12px;
@@ -505,6 +505,8 @@ body {
     border-radius: var(--radius);
     padding: 14px 16px;
     margin-bottom: 10px;
+    margin-left: 12px;
+    margin-right: 12px;
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
     cursor: pointer;
@@ -512,7 +514,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    width: 100%;
+    width: calc(100% - 24px);
     box-sizing: border-box;
 }
 
@@ -548,13 +550,15 @@ body {
     border-radius: var(--radius);
     padding: 14px 16px;
     margin-bottom: 10px;
+    margin-left: 12px;
+    margin-right: 12px;
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
     display: flex;
     align-items: center;
     cursor: pointer;
     transition: all .2s;
-    width: 100%;
+    width: calc(100% - 24px);
     box-sizing: border-box;
 }
 
@@ -578,13 +582,15 @@ body {
     border-radius: var(--radius);
     padding: 14px 16px;
     margin-bottom: 16px;
+    margin-left: 12px;
+    margin-right: 12px;
     border: 1px solid #FBCFE8;
     cursor: pointer;
     transition: all .2s;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    width: 100%;
+    width: calc(100% - 24px);
     box-sizing: border-box;
 }
 

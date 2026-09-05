@@ -810,11 +810,13 @@ async function renderMoreAnnouncements() {
     container.innerHTML = published.map(a => {
         const ann = transformAnnouncement(a);
         return `
-            <div class="info-row" onclick="showAnnouncementDetail(${ann.id})">
-                <span class="info-icon">📢</span>
-                <span class="info-label">${ann.title}</span>
-                <span style="font-size:10px;color:var(--text-light);margin-right:8px;">${ann.time_label}</span>
-                <span class="info-arrow">→</span>
+            <div class="announcement-banner" onclick="showAnnouncementDetail(${ann.id})">
+                <span class="ann-icon">📢</span>
+                <div class="ann-content">
+                    <strong>${ann.title}</strong>
+                    <span class="ann-time">${ann.time_label}</span>
+                </div>
+                <span class="ann-arrow">→</span>
             </div>
         `;
     }).join('');
