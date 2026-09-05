@@ -274,6 +274,12 @@ body {
     padding-right: 16px;
 }
 
+/* ===== 聖經 page mobile padding ===== */
+#page-bible .bible-content {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
 /* ========================================
    首頁輪播
    ======================================== */
