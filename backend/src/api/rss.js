@@ -84,7 +84,9 @@ export async function getRssFeed(request, env, params = {}) {
             sql += ' AND s.series_id = ?';
             binds.push(seriesId);
         }
-        sql += ' ORDER BY s.date DESC, s.id DESC';
+        sql += seriesId
+            ? ' ORDER BY s.sort_order ASC, s.date DESC, s.id DESC'
+            : ' ORDER BY s.date DESC, s.id DESC';
 
         const { results: sermons } = await env.DB.prepare(sql).bind(...binds).all();
 

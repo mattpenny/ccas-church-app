@@ -1,6 +1,6 @@
 ﻿import { cors } from './utils/cors.js';
 import { handleAuth } from './api/auth.js';
-import { getSermons, getSermon, createSermon, updateSermon, deleteSermon,
+import { getSermons, getSermon, createSermon, updateSermon, deleteSermon, reorderSermons,
          uploadSermonAudio, getSermonAudio, deleteSermonAudio,
          uploadSermonPdf, getSermonPdf, deleteSermonPdf } from './api/sermons.js';
 import { getSeries, getSeriesDetail, createSeries, updateSeries, deleteSeries, reorderSeries,
@@ -51,6 +51,7 @@ async function handleRequest(request, env, ctx) {
         // --- SERMONS ROUTES ---
         if (path === '/api/sermons' && method === 'GET') return getSermons(request, env);
         if (path === '/api/sermons' && method === 'POST') return createSermon(request, env);
+        if (path === '/api/sermons/reorder' && method === 'POST') return reorderSermons(request, env);
         if (path.match(/^\/api\/sermons\/\d+$/)) {
             const id = path.split('/')[3];
             if (method === 'GET') return getSermon(request, env, { id });

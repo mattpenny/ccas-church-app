@@ -71,6 +71,47 @@ export async function getSermons(request, env) {
     }
 }
 
+// 重新排序講道（系列內手動排序）：接收 { ids: [6, 5, 7] }，依陣列順序寫入 sort_order = 0, 1, 2...
+export async function reorderSermons(request, env) {
+    if (request.method === 'OPTIONS') {
+        return new Response(null, { headers: cors() });
+    }
+    if (!verifyAuth(request)) {
+        return new Response(JSON.stringify({ success: false, error: '未授權' }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json', ...cors() }
+        });
+    }
+
+    try {
+        const data = await request.json();
+        const ids = Array.isArray(data.ids)
+            ? data.ids.map(Number).filter(n => !isNaN(n))
+            : null;
+
+        if (!ids || ids.length === 0) {
+            return new Response(JSON.stringify({ success: false, error: '請提供講道 ID 順序陣列' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json', ...cors() }
+            });
+        }
+
+        const stmts = ids.map((id, index) =>
+            env.DB.prepare('UPDATE sermons SET sort_order = ? WHERE id = ?').bind(index, id)
+        );
+        await env.DB.batch(stmts);
+
+        return new Response(JSON.stringify({ success: true, message: '排序更新成功' }), {
+            headers: { 'Content-Type': 'application/json', ...cors() }
+        });
+    } catch (error) {
+        return new Response(JSON.stringify({ success: false, error: error.message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json', ...cors() }
+        });
+    }
+}
+
 export async function getSermon(request, env, params) {
     if (request.method === 'OPTIONS') {
         return new Response(null, { headers: cors() });
@@ -155,6 +196,22 @@ export async function createSermon(request, env) {
             videoId = 'N/A';
         }
 
+        // 手動排序：新講道加入系列時，自動排在該系列最尾（除非明確指定 sort_order）
+        let sortOrder = data.sort_order !== undefined && data.sort_order !== null && data.sort_order !== ''
+            ? Number(data.sort_order)
+            : null;
+        if (sortOrder === null) {
+            const seriesIdNum = Number(data.series_id) || null;
+            if (seriesIdNum) {
+                const maxRow = await env.DB.prepare(
+                    'SELECT IFNULL(MAX(sort_order), -1) + 1 AS next_order FROM sermons WHERE series_id = ?'
+                ).bind(seriesIdNum).all();
+                sortOrder = (maxRow.results && maxRow.results[0]) ? maxRow.results[0].next_order : 0;
+            } else {
+                sortOrder = 0;
+            }
+        }
+
         const result = await env.DB.prepare(`
             INSERT INTO sermons (
                 title, title_en, speaker, speaker_en, date, date_short,
@@ -176,7 +233,7 @@ export async function createSermon(request, env) {
             data.type || 'video',
             data.thumbnail_url || (videoId !== 'N/A' ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null),
             data.published !== undefined ? Number(data.published) : 1,
-            data.sort_order !== undefined ? Number(data.sort_order) : 0,
+            sortOrder,
             data.series_id !== undefined ? Number(data.series_id) || null : null
         ).run();
 

@@ -82,11 +82,11 @@ export async function getSeriesDetail(request, env, params) {
             ? `SELECT s.*, ser.title AS series_title
                FROM sermons s LEFT JOIN sermon_series ser ON s.series_id = ser.id
                WHERE s.series_id = ?
-               ORDER BY s.date DESC, s.id DESC`
+               ORDER BY s.sort_order ASC, s.date DESC, s.id DESC`
             : `SELECT s.*, ser.title AS series_title
                FROM sermons s LEFT JOIN sermon_series ser ON s.series_id = ser.id
                WHERE s.series_id = ? AND s.published = 1
-               ORDER BY s.date DESC, s.id DESC`;
+               ORDER BY s.sort_order ASC, s.date DESC, s.id DESC`;
         const { results } = await env.DB.prepare(query).bind(id).all();
 
         return new Response(JSON.stringify({

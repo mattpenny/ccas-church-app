@@ -226,11 +226,14 @@ function loadTabData(tab) {
 // 已展開的講道分組（預設全部收合）
 const expandedSermonGroups = new Set();
 
-function sermonItemHtml(s) {
+// 各組（系列/單次講道）嘅講道 ID 順序，供 ▲▼ 上移/下移使用
+const sermonOrderCache = {};
+
+function sermonItemHtml(s, groupKey, index, total) {
     return `
                 <div class="list-item">
                     <div class="item-info">
-                        <h4>${escapeHtml(s.title)}</h4>
+                        <h4><span class="order-num">${index + 1}</span>${escapeHtml(s.title)}</h4>
                         <div class="item-meta">
                             ${escapeHtml(s.speaker)} • ${escapeHtml(s.date)}
                             <span class="type-badge ${s.type}">${s.type === 'video' ? '🎬 影片' : '🎵 音頻'}</span>
@@ -241,6 +244,8 @@ function sermonItemHtml(s) {
                         </div>
                     </div>
                     <div class="item-actions">
+                        <button class="btn-move" onclick="moveSermon('${groupKey}', ${s.id}, -1)" title="上移（在 App 中排更前面）" ${index === 0 ? 'disabled' : ''}>▲</button>
+                        <button class="btn-move" onclick="moveSermon('${groupKey}', ${s.id}, 1)" title="下移（在 App 中排更後面）" ${index === total - 1 ? 'disabled' : ''}>▼</button>
                         ${s.video_id && s.video_id !== 'N/A' ? `
                             <button class="btn-play" onclick="playSermon('${s.video_id}')" title="播放">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
@@ -311,7 +316,17 @@ function loadSermons() {
             }
         });
 
-        const groupHtml = (key, icon, title, subtitle, items) => {
+        // 組內排序：手動 sort_order 優先（未排序時全部為 0，退回日期新→舊）
+        const sortGroup = (items) => items.slice().sort((a, b) =>
+            ((a.sort_order || 0) - (b.sort_order || 0)) ||
+            String(b.date || '').localeCompare(String(a.date || '')) ||
+            (b.id - a.id)
+        );
+
+        const groupHtml = (key, icon, title, subtitle, rawItems) => {
+            const items = sortGroup(rawItems);
+            // 記住組內順序，供 ▲▼ 上移/下移使用
+            sermonOrderCache[key] = items.map(s => s.id);
             const isOpen = expandedSermonGroups.has(key);
             return `
                 <div class="sermon-group ${isOpen ? 'expanded' : ''}" id="sermonGroup-${key}">
@@ -325,7 +340,7 @@ function loadSermons() {
                     </div>
                     <div class="sermon-group-body" ${isOpen ? '' : 'style="display:none;"'}>
                         ${items.length
-                            ? items.map(sermonItemHtml).join('')
+                            ? items.map((s, i) => sermonItemHtml(s, key, i, items.length)).join('')
                             : '<div class="sg-empty">此系列尚無講道</div>'}
                     </div>
                 </div>
@@ -847,6 +862,39 @@ function loadSeries() {
         `).join('') + `<p style="font-size:12px;color:var(--text-light);margin-top:10px;">💡 用 ▲▼ 調整系列在 App 中的列出順序（第 1 位排最前）</p>`;
     })
     .catch(() => showToast('載入系列失敗', 'error'));
+}
+
+// 系列內/單次講道組內 ▲▼ 手動排序（同系列排序機制一樣）
+function moveSermon(groupKey, id, dir) {
+    const ids = (sermonOrderCache[groupKey] || []).slice();
+    const idx = ids.indexOf(id);
+    const target = idx + dir;
+    if (idx < 0 || target < 0 || target >= ids.length) return;
+
+    const tmp = ids[idx];
+    ids[idx] = ids[target];
+    ids[target] = tmp;
+
+    showToast('⏳ 正在更新排序...');
+
+    cachedFetch(`${API_URL}/api/sermons/reorder`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ ids })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showToast('✅ 排序已更新！', 'success');
+            loadSermons();
+        } else {
+            showToast('排序更新失敗: ' + (data.error || '未知錯誤'), 'error');
+        }
+    })
+    .catch(() => showToast('排序更新失敗，請檢查網路', 'error'));
 }
 
 function moveSeries(id, dir) {
@@ -1893,6 +1941,7 @@ window.playSermon = playSermon;
 window.toggleSermonGroup = toggleSermonGroup;
 window.loadSermons = loadSermons;
 window.escapeHtml = escapeHtml;
+window.moveSermon = moveSermon;
 
 console.log('📊 CCAC Admin Panel 已載入');
 console.log('🔐 管理後台版本 2.0.0');
