@@ -59,7 +59,8 @@ export async function getRssFeed(request, env, params = {}) {
         let podcastDesc = podcastDescDefault;
         let channelImage = podcastImage;
         if (series) {
-            podcastTitle = series.title_en || series.title;
+            // 系列 Feed 標題：可用 podcast_series_title 設定統一覆蓋，否則用系列名稱
+            podcastTitle = settings.podcast_series_title || series.title_en || series.title;
             podcastDesc = series.description || series.description_en || `${series.title} 系列講道 - ${siteTitle}`;
             if (series.cover_url) {
                 channelImage = series.cover_url;
