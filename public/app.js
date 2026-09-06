@@ -1026,6 +1026,14 @@ function seriesCover(series) {
     return series.cover_url.startsWith('http') ? series.cover_url : `${API_URL}${series.cover_url}`;
 }
 
+// 將字串安全地嵌入 onclick="..." 的單引號字串中
+function jsStr(value) {
+    return String(value === null || value === undefined ? '' : value)
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/[\r\n]+/g, ' ');
+}
+
 function showSermonView(name) {
     sermonView = name;
     const views = { list: 'sermonSeriesView', series: 'sermonSeriesDetail', player: 'sermonPlayerView' };
@@ -1151,6 +1159,7 @@ async function openSeriesDetail(id) {
 
     const series = detail.series;
     const sermons = (detail.sermons || []).filter(s => s.published !== 0);
+    const hasPodcast = sermons.some(s => s.has_audio);
 
     container.innerHTML = `
         <div class="series-hero" style="background:${seriesGradient(series.id)}">
@@ -1162,6 +1171,12 @@ async function openSeriesDetail(id) {
             </div>
         </div>
         ${series.description ? `<p class="series-desc">${series.description}</p>` : ''}
+        ${hasPodcast ? `
+            <div class="info-row podcast-row" style="margin-top:12px;" onclick="showSeriesPodcastModal(${series.id}, '${jsStr(series.title)}')">
+                <span class="info-icon">🎙️</span>
+                <span class="info-label">本系列播客 (RSS)</span>
+                <span class="info-arrow">→</span>
+            </div>` : ''}
         <div class="sermon-list" style="margin-top:14px;">
             ${sermons.length
                 ? sermons.map(s => renderSermonItem(transformSermon(s))).join('')
@@ -1291,7 +1306,39 @@ function showPodcastModal() {
             <button class="copy-btn" onclick="copyRssLink()">複製</button>
         </div>
         <p style="font-size:11px;color:var(--text-light);margin-top:10px;">手機 Podcast App 也可「加入節目」並貼上此網址直接訂閱。</p>
+        <p style="font-size:11px;color:var(--text-light);margin-top:6px;">💡 若想將個別系列當成獨立 Podcast 節目，請到「講道 → 系列內頁」取得該系列的專屬 Feed。</p>
     `);
+}
+
+function seriesFeedUrl(seriesId) {
+    return `${API_URL}/feed/series/${seriesId}.xml`;
+}
+
+function showSeriesPodcastModal(seriesId, seriesTitle) {
+    const feedUrl = seriesFeedUrl(seriesId);
+    showModalWithContent('🎙️ 系列播客 (RSS)', `
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">「${seriesTitle || '本系列'}」的專屬 Podcast Feed — 可獨立提交到 Apple Podcasts、Spotify 等平台：</p>
+        <div class="copy-field">
+            <code>${feedUrl}</code>
+            <button class="copy-btn" onclick="copySeriesPodcastLink(${seriesId})">複製</button>
+        </div>
+        <p style="font-size:11px;color:var(--text-light);margin-top:10px;">此 Feed 只包含本系列中「有 MP3 音頻」且「已發布」的講道；日後新增講道會自動出現。</p>
+    `);
+}
+
+function copySeriesPodcastLink(seriesId) {
+    const text = seriesFeedUrl(seriesId);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast('已複製系列 RSS 網址'), () => showToast('複製失敗'));
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('已複製系列 RSS 網址');
+    }
 }
 
 function copyRssLink() {
@@ -1317,5 +1364,7 @@ window.showSermonSeriesList = showSermonSeriesList;
 window.openSermonPdf = openSermonPdf;
 window.showPodcastModal = showPodcastModal;
 window.copyRssLink = copyRssLink;
+window.showSeriesPodcastModal = showSeriesPodcastModal;
+window.copySeriesPodcastLink = copySeriesPodcastLink;
 
 console.log('🎙️ 系列講道功能 v3.1 已載入');

@@ -73,6 +73,11 @@ export default {
 
         // --- RSS PODCAST FEED ---
         if ((path === '/feed.xml' || path === '/rss.xml') && method === 'GET') return getRssFeed(request, env);
+        // 系列專屬 Feed：/feed/series/1.xml
+        if (path.match(/^\/feed\/series\/\d+\.xml$/) && method === 'GET') {
+            const id = path.split('/')[3].replace('.xml', '');
+            return getRssFeed(request, env, { seriesId: id });
+        }
 
         // --- EVENTS ROUTES ---
         if (path === '/api/events' && method === 'GET') return getEvents(request, env);
