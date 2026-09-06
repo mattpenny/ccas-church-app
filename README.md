@@ -27,15 +27,25 @@ CCAC 教會應用程式，包含前端展示和後端管理系統。
 
 ## 🎧 播客 RSS Feed 提交指南
 上傳 MP3 音頻的講道會自動出現在 RSS Feed 中：
+
+**總 Feed（全部講道）：**
 `https://ccac-api.ccac-church.workers.dev/feed.xml`
+
+**各系列專屬 Feed**（每個系列可當成獨立 Podcast 節目分別提交）：
+`https://ccac-api.ccac-church.workers.dev/feed/series/{系列ID}.xml`
+> 例子：`https://ccac-api.ccac-church.workers.dev/feed/series/5.xml`（哥林多前書系列）
+> App 內「講道 → 系列內頁」也有「🎙️ 本系列播客 (RSS)」按鈕可一鍵複製網址。
 
 ### 提交步驟
 1. **Apple Podcasts**：到 [Podcasts Connect](https://podcastsconnect.apple.com/) → 用 Apple ID 登入 → 「＋」新增節目 → 貼上 RSS Feed 網址 → 審核約需 1-5 個工作天
 2. **Spotify**：到 [Spotify for Creators](https://creators.spotify.com/) → 新增節目 → 貼上 RSS Feed 網址 → 驗證後送出
 3. **其他平台**（iHeartRadio、TuneIn 等）：同樣在節目設定中貼上此 Feed 網址即可
 
+> 💡 想將不同系列做成不同 Podcast 節目？每個系列提交一次自己的系列 Feed 網址即可；總 Feed 則是一整個「講道」節目。
+
 ### 注意事項
 - Feed 只包含**已發布且有 MP3 音頻**的講道
+- 系列 Feed 的節目名稱／封面取自該系列名稱與系列封面
 - 建議先在管理後台設定好教會名稱與封面（系列封面或講道縮圖會用作節目封面）
 - Feed 更新後，各平台通常會在數小時內自動抓取新講道
 

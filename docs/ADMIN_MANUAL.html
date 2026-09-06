@@ -223,18 +223,26 @@
 
 <h2 id="sec8">8. 播客 RSS Feed</h2>
 <p>有上傳 <strong>MP3</strong> 且<strong>已發布</strong>的講道會自動進入播客 Feed，<strong>不需另外操作</strong>：</p>
+
+<p><strong>總 Feed（全部講道）：</strong></p>
 <span class="feed-url">https://ccac-api.ccac-church.workers.dev/feed.xml</span>
 
-<h3>提交到播客平台（只需做一次）</h3>
+<p><strong>各系列專屬 Feed（每個系列可當成獨立 Podcast 節目）：</strong></p>
+<span class="feed-url">https://ccac-api.ccac-church.workers.dev/feed/series/5.xml</span>
+<p style="font-size:12px;color:#666;">格式：<code>/feed/series/{系列ID}.xml</code>（例如 5 = 哥林多前書系列）<br>
+✅ 在 App「講道 → 系列內頁」點「🎙️ 本系列播客 (RSS)」即可一鍵複製該系列的 Feed 網址。</p>
+
+<h3>提交到播客平台（每個 Feed 只需提交一次）</h3>
 <div class="steps">
   <p><strong>1. Apple Podcasts</strong>：<a href="https://podcastsconnect.apple.com/">Podcasts Connect</a> → Apple ID 登入 →「＋」→ 貼上 Feed 網址 → 審核 1–5 個工作天</p>
   <p><strong>2. Spotify</strong>：<a href="https://creators.spotify.com/">Spotify for Creators</a> → 新增節目 → 貼上 Feed 網址</p>
   <p><strong>3. 其他平台</strong>（iHeartRadio、TuneIn…）同樣貼上此網址即可</p>
 </div>
+<p>💡 若想將不同系列做成<strong>不同 Podcast 節目</strong>（例如「哥林多前書系列」獨立為一個節目），就把各系列的 Feed 網址分別提交到各平台即可。</p>
 <h3>注意事項</h3>
 <ul>
+  <li>系列 Feed 的<strong>節目名稱與封面</strong>取自該系列的名稱與封面圖；總 Feed 則使用後台設定（或系列封面）。</li>
   <li>之後每次上傳新講道（有 MP3、已發布），各平台會在數小時內自動抓取。</li>
-  <li>Feed 的節目封面取自系列封面或講道縮圖，建議至少上傳一張。</li>
   <li>隱藏（⛔）的講道不會出現在 Feed 中。</li>
 </ul>
 <h2 id="sec9">9. 常見問題與疑難排解</h2>

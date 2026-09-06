@@ -182,20 +182,30 @@ App 首頁頂部的跑馬公告（可附彈窗詳細內容）。
 
 有上傳 **MP3** 且**已發布**的講道會自動進入播客 Feed，**不需另外操作**：
 
+**總 Feed（全部講道）：**
 ```
 https://ccac-api.ccac-church.workers.dev/feed.xml
 ```
 
-### 提交到播客平台（只需做一次）
+**各系列專屬 Feed（每個系列可當成獨立 Podcast 節目）：**
+```
+https://ccac-api.ccac-church.workers.dev/feed/series/{系列ID}.xml
+```
+
+> 直接在 App「講道 → 系列內頁」點「🎙️ 本系列播客 (RSS)」即可一鍵複製該系列的 Feed 網址，不用記住系列 ID。
+
+### 提交到播客平台（每個 Feed 只需提交一次）
 
 1. **Apple Podcasts**：[Podcasts Connect](https://podcastsconnect.apple.com/) → Apple ID 登入 → 「＋」→ 貼上 Feed 網址 → 審核 1–5 個工作天
 2. **Spotify**：[Spotify for Creators](https://creators.spotify.com/) → 新增節目 → 貼上 Feed 網址
 3. 其他平台（iHeartRadio、TuneIn…）同樣貼上此網址即可
 
+> 💡 若想將不同系列做成**不同 Podcast 節目**（例如「哥林多前書系列」獨立為一個節目），就把不同系列的 Feed 網址分別提交到各平台即可。
+
 ### 注意事項
 
+- 系列 Feed 的**節目名稱與封面**取自該系列的名稱與封面圖；總 Feed 則使用後台設定（或系列封面）。
 - 之後每次上傳新講道（有 MP3、已發布），各平台會在數小時內自動抓取。
-- Feed 的節目封面取自系列封面或講道縮圖，建議至少上傳一張。
 - 隱藏（⛔）的講道不會出現在 Feed 中。
 
 ---
