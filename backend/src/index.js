@@ -12,6 +12,28 @@ import { getDocuments, getDocument, uploadDocument, deleteDocument, downloadDocu
 
 export default {
     async fetch(request, env, ctx) {
+        const method = request.method;
+        if (method === 'OPTIONS') {
+            return new Response(null, { headers: cors() });
+        }
+
+        // HEAD → 當作 GET 處理（Apple Podcasts 要求 feed 與 enclosure URL 必須支援 HTTP HEAD）
+        // 回傳相同 status 與 headers，但無 body
+        if (method === 'HEAD') {
+            const getRequest = new Request(request.url, {
+                method: 'GET',
+                headers: request.headers,
+                redirect: request.redirect
+            });
+            const res = await handleRequest(getRequest, env, ctx);
+            return new Response(null, { status: res.status, statusText: res.statusText, headers: res.headers });
+        }
+
+        return handleRequest(request, env, ctx);
+    }
+};
+
+async function handleRequest(request, env, ctx) {
         const url = new URL(request.url);
         // Normalize path: lowercased and strip trailing slash
         let path = url.pathname.toLowerCase();
@@ -20,11 +42,6 @@ export default {
         }
         
         const method = request.method;
-
-        // Central Preflight OPTIONS
-        if (method === 'OPTIONS') {
-            return new Response(null, { headers: cors() });
-        }
 
         // --- AUTH ROUTES ---
         if (path === '/api/auth/login' && method === 'POST') {
@@ -46,6 +63,11 @@ export default {
             if (method === 'GET') return getSermonAudio(request, env, { id });
             if (method === 'POST') return uploadSermonAudio(request, env, { id });
             if (method === 'DELETE') return deleteSermonAudio(request, env, { id });
+        }
+        // 音頻 .mp3 結尾別名（Apple Podcasts 要求 enclosure URL 有副檔名，feed 使用此網址）
+        if (path.match(/^\/api\/sermons\/\d+\/audio\.mp3$/)) {
+            const id = path.split('/')[3];
+            if (method === 'GET') return getSermonAudio(request, env, { id });
         }
         // 講道大綱 PDF
         if (path.match(/^\/api\/sermons\/\d+\/pdf$/)) {
@@ -132,4 +154,3 @@ export default {
             headers: { 'Content-Type': 'application/json', ...cors() }
         });
     }
-};

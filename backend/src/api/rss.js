@@ -88,7 +88,7 @@ export async function getRssFeed(request, env, params = {}) {
         const { results: sermons } = await env.DB.prepare(sql).bind(...binds).all();
 
         const items = (sermons || []).map(s => {
-            const audioUrl = `${base}/api/sermons/${s.id}/audio`;
+            const audioUrl = `${base}/api/sermons/${s.id}/audio.mp3`;
             const hasVideo = s.video_id && s.video_id !== 'N/A' && s.video_id !== 'dQw4w9WgXcQ';
             const link = hasVideo && s.youtube_url ? s.youtube_url : audioUrl;
             const image = channelImage || s.series_cover_url || (s.series_cover_key ? `${base}/api/series/${s.series_id}/cover` : '');
