@@ -89,7 +89,8 @@ export async function getRssFeed(request, env, params = {}) {
 
         const items = (sermons || []).map(s => {
             const audioUrl = `${base}/api/sermons/${s.id}/audio`;
-            const link = s.youtube_url || audioUrl;
+            const hasVideo = s.video_id && s.video_id !== 'N/A' && s.video_id !== 'dQw4w9WgXcQ';
+            const link = hasVideo && s.youtube_url ? s.youtube_url : audioUrl;
             const image = channelImage || s.series_cover_url || (s.series_cover_key ? `${base}/api/series/${s.series_id}/cover` : '');
             const description = s.description || (s.series_title ? `${s.series_title}系列講道` : '');
             const duration = s.duration || '';
