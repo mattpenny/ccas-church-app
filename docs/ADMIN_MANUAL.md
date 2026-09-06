@@ -2,7 +2,7 @@
 
 > 適用對象：教會網站／App 的內容管理員（上傳講道、管理系列、公告等）
 > 後台網址：`https://ccac-api.ccac-church.workers.dev/admin/`（本機測試為 `http://localhost:8787/admin/`）
-> 最後更新：2026-09-05
+> 最後更新：2026-09-06
 
 ---
 
