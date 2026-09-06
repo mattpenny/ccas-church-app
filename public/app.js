@@ -10,6 +10,10 @@ const IS_NATIVE_APP = typeof window !== 'undefined' && !!(window.Capacitor && (
 ));
 const API_URL = IS_NATIVE_APP ? 'https://ccac-api.ccac-church.workers.dev' : '';
 
+// 播客 RSS Feed 一定要用「完整公開網址」先可以提交到 Apple/Spotify 等平台，
+// 所以唔可以依賴 API_URL（網頁版係相對路徑）
+const PODCAST_BASE_URL = 'https://ccac-api.ccac-church.workers.dev';
+
 // ========================================
 // 快取破壞工具函式 - 強制每次都取得最新內容
 // ========================================
@@ -1298,7 +1302,7 @@ function openYouTube(videoId) {
 }
 
 function showPodcastModal() {
-    const feedUrl = `${API_URL}/feed.xml`;
+    const feedUrl = `${PODCAST_BASE_URL}/feed.xml`;
     showModalWithContent('🎙️ 播客訂閱 (RSS)', `
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">將以下連結提交到 Apple Podcasts、Spotify、Google Podcasts：</p>
         <div class="copy-field">
@@ -1311,7 +1315,7 @@ function showPodcastModal() {
 }
 
 function seriesFeedUrl(seriesId) {
-    return `${API_URL}/feed/series/${seriesId}.xml`;
+    return `${PODCAST_BASE_URL}/feed/series/${seriesId}.xml`;
 }
 
 function showSeriesPodcastModal(seriesId, seriesTitle) {
@@ -1342,7 +1346,7 @@ function copySeriesPodcastLink(seriesId) {
 }
 
 function copyRssLink() {
-    const text = `${API_URL}/feed.xml`;
+    const text = `${PODCAST_BASE_URL}/feed.xml`;
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => showToast('已複製 RSS 網址'), () => showToast('複製失敗'));
     } else {
