@@ -63,7 +63,8 @@
   <p>適用對象：教會網站／App 的內容管理員（上傳講道、管理系列、公告等）</p>
   <p class="cover-url">後台網址：https://ccac-api.ccac-church.workers.dev/admin/</p>
   <p>本機測試：http://localhost:8787/admin/</p>
-  <p>最後更新：2026-09-06</p>
+  <p>會眾使用說明：docs/USER_MANUAL.md</p>
+  <p>最後更新：2026-09-07</p>
 </div>
 
 <nav class="toc">
@@ -170,6 +171,7 @@
   <tr><td>排序</td><td>—</td><td>數字越小排越前（也可之後用 ▲▼ 調整）</td></tr>
   <tr><td>🖼️ 封面圖</td><td>—</td><td>JPG/PNG/WEBP/GIF，<strong>上限 5MB</strong>；未上傳時 App 自動用漸層色封面</td></tr>
 </table>
+<div class="tip">💡 <strong>上傳系列封面後，系列內未上傳照片的講道也會自動使用這張封面作為縮圖</strong> — 建議每個系列都放一張好看封面。</div>
 
 <h3>4.2 調整系列順序（列出優先順序）</h3>
 <p>「📚 系列」分頁中，每個系列前面有編號（1、2、3…）：</p>
@@ -250,7 +252,7 @@
   <tr><th style="width:45%;">問題</th><th>解決方法</th></tr>
   <tr><td><strong>Q1：上傳 MP3 到一半失敗？</strong></td><td>檔案請小於 90MB。若講道已建立但檔案上傳失敗，會出現提示 → 到該講道的「編輯」重新上傳即可。</td></tr>
   <tr><td><strong>Q2：上傳後 App 看不到新講道？</strong></td><td>① 確認「發布狀態」是 ✅ 已發布；② App 下拉重新整理；③ 網頁版按 Ctrl+F5 強制更新。</td></tr>
-  <tr><td><strong>Q3：PDF 點開是空白或無法檢視？</strong></td><td>聽眾裝置會用內建 PDF 檢視器開啟；請確認 PDF 未加密、檔案小於 20MB。</td></tr>
+  <tr><td><strong>Q3：PDF 點開是空白或無法檢視？</strong></td><td>電腦版會開新分頁直接檢視；手機 App 會自動改用瀏覽器開啟（透過 Google 文件檢視器，需連網）。請確認 PDF 未加密、檔案小於 20MB。</td></tr>
   <tr><td><strong>Q4：只想讓講道出現在 Feed、不想在 App 出現（或反之）？</strong></td><td>兩者都以「已發布」為準；若要暫時下架，改為 ⛔ 隱藏即可（Feed 與 App 同步消失）。</td></tr>
   <tr><td><strong>Q5：系列刪掉了，講道會不見嗎？</strong></td><td>不會。講道會自動歸到「單次講道」，可再編輯指派到新的系列。</td></tr>
   <tr><td><strong>Q6：排序按了沒反應？</strong></td><td>請確認網路正常；排序成功會顯示「✅ 排序已更新！」。失敗請重試。</td></tr>
@@ -264,7 +266,7 @@
   <li>上傳檔案請使用教會自行拍攝／製作或已授權的內容，避免版權問題。</li>
 </ul>
 
-<footer>CCAC Granada Hills 教會 App — 管理員使用手冊 v1.0（2026-09-05）<br>技術支援請聯絡系統管理員</footer>
+<footer>CCAC Granada Hills 教會 App — 管理員使用手冊 v1.1（2026-09-07）<br>會眾使用說明請見 docs/USER_MANUAL.md · 技術支援請聯絡系統管理員</footer>
 
 </body>
 </html>
