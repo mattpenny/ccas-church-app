@@ -235,6 +235,12 @@ https://ccac-api.ccac-church.workers.dev/feed/series/{系列ID}.xml
 **Q6：排序按了沒反應？**
 請確認網路正常；排序成功會顯示「✅ 排序已更新！」。失敗請重試。
 
+**Q7：Cloudflare R2 裡的資料夾都是數字，怎麼知道是哪個系列／講道？**
+資料夾編號就是後台的系統 ID（例如 `series/5/`、`sermons/6/`）：
+- 「編輯講道」視窗標題會顯示**系統編號 #6**，並列出該講道的 R2 位置（`sermons/6/audio.mp3`、`sermons/6/outline.pdf`）。
+- 「編輯系列」視窗會顯示**系統編號 #5** 與 R2 資料夾（`series/5/`）。
+- 2026-09 之後上傳的檔案，在 R2 物件的「詳細資訊」還會帶有 `sermon-title` / `speaker` / `series-title` 中繼資料，直接顯示標題，不用再對照編號。
+
 ---
 
 ## 10. 安全注意事項

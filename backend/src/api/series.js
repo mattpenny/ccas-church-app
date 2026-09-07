@@ -262,7 +262,11 @@ export async function uploadSeriesCover(request, env, params) {
                 await env.R2.delete(series.cover_key);
             }
             await env.R2.put(coverKey, cover.stream(), {
-                httpMetadata: { contentType: cover.type }
+                httpMetadata: { contentType: cover.type },
+                customMetadata: {
+                    'series-id': String(id),
+                    'series-title': series.title || ''
+                }
             });
         }
 

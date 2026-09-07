@@ -449,6 +449,11 @@ export async function uploadSermonAudio(request, env, params) {
                 httpMetadata: {
                     contentType: 'audio/mpeg',
                     contentDisposition: `inline; filename="${audio.name}"`
+                },
+                customMetadata: {
+                    'sermon-id': String(id),
+                    'sermon-title': results[0].title || '',
+                    'speaker': results[0].speaker || ''
                 }
             });
         }
@@ -649,6 +654,10 @@ export async function uploadSermonPdf(request, env, params) {
                 httpMetadata: {
                     contentType: 'application/pdf',
                     contentDisposition: `inline; filename="${pdf.name}"`
+                },
+                customMetadata: {
+                    'sermon-id': String(id),
+                    'sermon-title': results[0].title || ''
                 }
             });
         }

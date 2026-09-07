@@ -455,14 +455,14 @@ function showEditModal(type, data) {
     
     if (type === 'sermon') {
         const audioStatus = data.audio_key
-            ? `<span class="type-badge audio">🎵 已有音頻：${escapeHtml(data.audio_name || 'MP3')}</span>`
-            : '<span style="color:var(--text-light);font-size:12px;">尚未上傳音頻</span>';
+            ? `<span class="type-badge audio">🎵 已有音頻：${escapeHtml(data.audio_name || 'MP3')}</span><br><small style="color:var(--text-light);font-size:11px;">📁 R2 位置：<code>${escapeHtml(data.audio_key)}</code></small>`
+            : '<span style="color:var(--text-light);font-size:12px;">尚未上傳音頻（R2 位置將是 <code>sermons/' + data.id + '/audio.mp3</code>）</span>';
         const pdfStatus = data.pdf_key
-            ? `<span class="type-badge pdf">📄 已有大綱：${escapeHtml(data.pdf_name || 'PDF')}</span>`
-            : '<span style="color:var(--text-light);font-size:12px;">尚未上傳大綱</span>';
+            ? `<span class="type-badge pdf">📄 已有大綱：${escapeHtml(data.pdf_name || 'PDF')}</span><br><small style="color:var(--text-light);font-size:11px;">📁 R2 位置：<code>${escapeHtml(data.pdf_key)}</code></small>`
+            : '<span style="color:var(--text-light);font-size:12px;">尚未上傳大綱（R2 位置將是 <code>sermons/' + data.id + '/outline.pdf</code>）</span>';
         html = `
             <h3>✏️ 編輯講道</h3>
-            <p class="subtitle">修改講道資訊</p>
+            <p class="subtitle">修改講道資訊（系統編號 #${data.id}）</p>
             <div class="form-group">
                 <label>標題 <span style="color:#EF4444;">*</span></label>
                 <input type="text" id="editSermonTitle" value="${escapeHtml(data.title || '')}">
@@ -530,7 +530,7 @@ function showEditModal(type, data) {
     } else if (type === 'series') {
         html = `
             <h3>✏️ 編輯系列</h3>
-            <p class="subtitle">修改系列資訊</p>
+            <p class="subtitle">修改系列資訊（系統編號 #${data.id}，R2 資料夾 <code>series/${data.id}/</code>）</p>
             <div class="form-group">
                 <label>系列名稱 <span style="color:#EF4444;">*</span></label>
                 <input type="text" id="editSeriesTitle" value="${escapeHtml(data.title || '')}">
@@ -560,6 +560,7 @@ function showEditModal(type, data) {
                     ${data.cover_url
                         ? `<img src="${escapeHtml(data.cover_url.startsWith('http') ? data.cover_url : API_URL + data.cover_url)}" style="max-width:120px;border-radius:8px;display:block;margin-bottom:6px;" alt="封面">`
                         : '<span style="color:var(--text-light);font-size:12px;">尚未上傳封面（未上傳時 App 會使用漸層色封面）</span>'}
+                    ${data.cover_key ? `<small style="color:var(--text-light);font-size:11px;display:block;margin-top:6px;">📁 R2 封面檔：<code>${escapeHtml(data.cover_key)}</code></small>` : ''}
                 </div>
                 <input type="file" id="editSeriesCoverFile" accept=".jpg,.jpeg,.png,.webp,.gif,image/*" style="display:none;" onchange="uploadSeriesCoverFile(${data.id})">
                 <button type="button" class="btn-upload secondary" onclick="document.getElementById('editSeriesCoverFile').click()">⬆️ 上傳 / 更新封面</button>
