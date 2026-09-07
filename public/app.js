@@ -669,7 +669,6 @@ async function renderBibleChapter(container, bookId, chapter) {
         ${biblePillsHTML()}
         <button class="bible-back-btn" onclick="bibleOpenBook(${bookId})">‹ ${escapeHtml(data.zh)} 章節</button>
         <div class="bible-reader-title">${escapeHtml(data.zh)} 第 ${chapter} 章 <small>${escapeHtml(data.en || '')} ${chapter}</small></div>
-        <p class="bible-reader-sub">${escapeHtml(bibleVersionLabel(bibleVersion))}</p>
         <div class="bible-font-bar">
             <button class="bible-font-btn" onclick="bibleFontChange(-1)" aria-label="縮小字體">A－</button>
             <span class="bible-font-size-label">${bibleFontSize}px</span>
