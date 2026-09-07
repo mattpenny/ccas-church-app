@@ -520,14 +520,6 @@ async function updateSermonDate() {
     }
 }
 
-function updateHeaderDate() {
-    const el = document.getElementById('headerDate');
-    if (!el) return;
-    const now = new Date();
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    el.textContent = now.toLocaleDateString('zh-TW', options);
-}
-
 
 // ========================================
 // 聖經頁面（繁體和合本 • 章節閱讀）
@@ -951,7 +943,6 @@ function showToast(msg) {
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateHeaderDate();
     initCarousel();
     renderHomeEvents();
     renderHomeAnnouncements();

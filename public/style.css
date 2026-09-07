@@ -191,17 +191,6 @@ body {
     color: var(--primary);
 }
 
-.header-right {
-    display: flex;
-    align-items: center;
-}
-
-.header-date {
-    font-size: 11px;
-    color: var(--text-light);
-    font-weight: 500;
-}
-
 /* ========================================
    主內容區域
    ======================================== */
