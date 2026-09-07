@@ -1,7 +1,7 @@
 # ⛪ CCAC 教會 App — 管理員使用手冊
 
 > 適用對象：教會網站／App 的內容管理員（上傳講道、管理系列、公告等）
-> 後台網址：`https://ccac-api.ccac-church.workers.dev/admin/`（本機測試為 `http://localhost:8787/admin/`）
+> 後台網址：`https://ccac-api.ccac-church.workers.dev/admin/`
 > 會眾使用說明：請見 [USER_MANUAL.md](USER_MANUAL.md)
 > 最後更新：2026-09-07
 
