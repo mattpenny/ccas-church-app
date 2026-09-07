@@ -5,6 +5,7 @@ import { verifyAuth } from './auth.js';
 function mapSermon(s) {
     return {
         ...s,
+        series_cover: s.series_cover_url || (s.series_cover_key ? `/api/series/${s.series_id}/cover` : null) || null,
         audio_url: s.audio_key ? `/api/sermons/${s.id}/audio` : null,
         pdf_url: s.pdf_key ? `/api/sermons/${s.id}/pdf` : null
     };
@@ -120,7 +121,10 @@ export async function getSermon(request, env, params) {
     try {
         const { id } = params;
         const { results } = await env.DB.prepare(
-            'SELECT * FROM sermons WHERE id = ?'
+            `SELECT s.*, ser.title AS series_title,
+                    ser.cover_url AS series_cover_url, ser.cover_key AS series_cover_key
+             FROM sermons s LEFT JOIN sermon_series ser ON s.series_id = ser.id
+             WHERE s.id = ?`
         ).bind(id).all();
         
         if (!results || results.length === 0) {

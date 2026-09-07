@@ -401,6 +401,9 @@ function transformSermon(sermon) {
         published: sermon.published,
         series_id: sermon.series_id,
         series_title: sermon.series_title || '',
+        series_cover: sermon.series_cover
+            ? (String(sermon.series_cover).startsWith('http') ? sermon.series_cover : `${API_URL}${sermon.series_cover}`)
+            : null,
         has_audio: !!(sermon.audio_key),
         has_pdf: !!(sermon.pdf_key),
         pdf_name: sermon.pdf_name || '',
@@ -713,7 +716,7 @@ async function loadBibleDocs() {
                 const icon = isPDF ? '📄' : isImage ? '🖼️' : '📎';
                 const sizeMB = (doc.file_size / 1024 / 1024).toFixed(1);
                 return `
-                    <div class="bible-doc-item" onclick="downloadDocument(${doc.id})">
+                    <div class="bible-doc-item" onclick="downloadDocument(${doc.id}, '${jsStr(doc.file_type || '')}')">
                         <div class="bible-doc-icon">${icon}</div>
                         <div class="bible-doc-info">
                             <h4>${escapeHtml(doc.title)}</h4>
@@ -730,9 +733,15 @@ async function loadBibleDocs() {
     }
 }
 
-function downloadDocument(docId) {
+function downloadDocument(docId, fileType) {
     showToast('📥 正在下載...');
-    window.open(`${API_URL}/api/documents/${docId}/download`, '_blank');
+    const url = `${API_URL}/api/documents/${docId}/download`;
+    // 手機 App：非圖片檔（PDF / Word 等）改用 Google 檢視器開啟（WebView 無法直接顯示）
+    if (IS_NATIVE_APP && !(fileType || '').startsWith('image/')) {
+        openPdfUrl(url);
+    } else {
+        openExternal(url);
+    }
 }
 
 // ========================================
@@ -862,7 +871,12 @@ function openNewsletter() {
         .then(data => {
             if (data.success && data.data && data.data.length > 0) {
                 const doc = data.data[0];
-                window.open(`${API_URL}/api/documents/${doc.id}/download`, '_blank');
+                const url = `${API_URL}/api/documents/${doc.id}/download`;
+                if (IS_NATIVE_APP && !(doc.file_type || '').startsWith('image/')) {
+                    openPdfUrl(url);
+                } else {
+                    openExternal(url);
+                }
             } else {
                 showToast('目前尚無週報');
             }
@@ -1115,8 +1129,8 @@ function renderSermonItem(s) {
     return `
         <div class="sermon-item" onclick="openSermonPlayer(${s.id}, '${s.series_id ? 'series' : 'list'}', ${s.series_id || 'null'})">
             <div class="sermon-icon">
-                ${s.thumbnail
-                    ? `<img src="${s.thumbnail}" alt="${s.title}" loading="lazy">`
+                ${(s.thumbnail || s.series_cover)
+                    ? `<img src="${s.thumbnail || s.series_cover}" alt="${s.title}" loading="lazy">`
                     : `<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`
                 }
             </div>
@@ -1250,8 +1264,8 @@ async function openSermonPlayer(id, backView, seriesId) {
     container.innerHTML = `
         <div class="sermon-player-card">
             <div class="player-cover">
-                ${s.thumbnail
-                    ? `<img src="${s.thumbnail}" alt="${s.title}">`
+                ${(s.thumbnail || s.series_cover)
+                    ? `<img src="${s.thumbnail || s.series_cover}" alt="${s.title}">`
                     : `<div class="player-cover-fallback" style="background:${seriesGradient(s.series_id)}">🎬</div>`}
                 ${s.series_title ? `<span class="player-series-tag">${s.series_title}</span>` : ''}
             </div>
@@ -1279,9 +1293,31 @@ function showSermonSeriesList() {
     renderSermons();
 }
 
+// Capacitor WebView（手機 App）不支援 window.open 開新視窗（點了沒反應）。
+// 改用「頁面導航」：導航到外部網址時，Capacitor 會自動改用系統瀏覽器開啟；
+// 桌機瀏覽器則維持原本的開新分頁行為。
+function openExternal(url) {
+    const full = url.startsWith('http') ? url : `${API_URL}${url}`;
+    if (IS_NATIVE_APP) {
+        window.location.href = full;
+    } else {
+        window.open(full, '_blank');
+    }
+}
+
+// 手機 App 的 WebView 無法直接顯示 PDF（會一片空白），
+// 因此包一層 Google 文件檢視器：外部網址 → 系統瀏覽器開啟並渲染 PDF。
+function openPdfUrl(url) {
+    if (IS_NATIVE_APP) {
+        openExternal(`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(url)}`);
+    } else {
+        window.open(url, '_blank');
+    }
+}
+
 function openSermonPdf(id) {
     showToast('📄 開啟講道大綱...');
-    window.open(`${API_URL}/api/sermons/${id}/pdf`, '_blank');
+    openPdfUrl(`${API_URL}/api/sermons/${id}/pdf`);
 }
 function openYouTube(videoId) {
     if (!videoId || videoId === 'N/A' || videoId === 'dQw4w9WgXcQ') {
@@ -1289,7 +1325,7 @@ function openYouTube(videoId) {
         return;
     }
     showToast('開啟 YouTube...');
-    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+    openExternal(`https://www.youtube.com/watch?v=${videoId}`);
 }
 
 function showPodcastModal() {
@@ -1357,6 +1393,7 @@ window.openSermonPlayer = openSermonPlayer;
 window.goBackFromPlayer = goBackFromPlayer;
 window.showSermonSeriesList = showSermonSeriesList;
 window.openSermonPdf = openSermonPdf;
+window.openExternal = openExternal;
 window.showPodcastModal = showPodcastModal;
 window.copyRssLink = copyRssLink;
 window.showSeriesPodcastModal = showSeriesPodcastModal;

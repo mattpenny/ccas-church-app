@@ -79,21 +79,27 @@ export async function getSeriesDetail(request, env, params) {
 
         const isAuth = verifyAuth(request);
         const query = isAuth
-            ? `SELECT s.*, ser.title AS series_title
+            ? `SELECT s.*, ser.title AS series_title,
+                      ser.cover_url AS series_cover_url, ser.cover_key AS series_cover_key
                FROM sermons s LEFT JOIN sermon_series ser ON s.series_id = ser.id
                WHERE s.series_id = ?
                ORDER BY s.sort_order ASC, s.date DESC, s.id DESC`
-            : `SELECT s.*, ser.title AS series_title
+            : `SELECT s.*, ser.title AS series_title,
+                      ser.cover_url AS series_cover_url, ser.cover_key AS series_cover_key
                FROM sermons s LEFT JOIN sermon_series ser ON s.series_id = ser.id
                WHERE s.series_id = ? AND s.published = 1
                ORDER BY s.sort_order ASC, s.date DESC, s.id DESC`;
         const { results } = await env.DB.prepare(query).bind(id).all();
+        const sermons = (results || []).map(s => ({
+            ...s,
+            series_cover: s.series_cover_url || (s.series_cover_key ? `/api/series/${s.series_id}/cover` : null) || null
+        }));
 
         return new Response(JSON.stringify({
             success: true,
             data: {
                 series: withCover(series),
-                sermons: results || []
+                sermons: sermons
             }
         }), {
             headers: { 'Content-Type': 'application/json', ...cors() }
