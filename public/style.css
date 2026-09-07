@@ -1212,18 +1212,59 @@ body {
 
 .bible-verses {
     line-height: 2;
+    font-size: 15px; /* 預設經文字體（可由 A－ / A＋ 按鈕調整） */
 }
 
 .bible-verse {
-    font-size: 15px;
+    font-size: inherit;
     margin-bottom: 6px;
     text-align: justify;
+}
+
+.bible-font-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 0 0 10px;
+}
+
+.bible-font-btn {
+    min-width: 36px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.bible-font-btn:hover,
+.bible-font-btn:active {
+    background: rgba(124, 58, 237, 0.08);
+    border-color: var(--primary-light);
+}
+
+.bible-font-btn-lg {
+    font-size: 15px;
+}
+
+.bible-font-size-label {
+    min-width: 36px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
 }
 
 .bible-verse-num {
     color: var(--primary);
     font-weight: 700;
-    font-size: 11px;
+    font-size: 0.72em;
     margin-right: 6px;
 }
 

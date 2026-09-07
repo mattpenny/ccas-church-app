@@ -546,6 +546,9 @@ const bibleIndexPromises = {};                  // version -> Promise(index)
 let bibleIndexCache = [];                       // 目前譯本書卷目錄
 const bibleBookData = {};                       // 'version:bookId' -> 書卷經文快取
 let bibleView = { bookId: null, chapter: null }; // 目前瀏覽狀態
+const BIBLE_FONT_SIZES = [15, 17, 19, 22, 25];   // 經文字體大小（px），第 1 級為預設最小
+let bibleFontSize = parseInt(localStorage.getItem('bibleFontSize'), 10) || BIBLE_FONT_SIZES[0];
+if (!BIBLE_FONT_SIZES.includes(bibleFontSize)) bibleFontSize = BIBLE_FONT_SIZES[0];
 
 function bibleVersionLabel(ver) {
     const v = BIBLE_VERSIONS.find(x => x.id === ver);
@@ -667,7 +670,12 @@ async function renderBibleChapter(container, bookId, chapter) {
         <button class="bible-back-btn" onclick="bibleOpenBook(${bookId})">‹ ${escapeHtml(data.zh)} 章節</button>
         <div class="bible-reader-title">${escapeHtml(data.zh)} 第 ${chapter} 章 <small>${escapeHtml(data.en || '')} ${chapter}</small></div>
         <p class="bible-reader-sub">${escapeHtml(bibleVersionLabel(bibleVersion))}</p>
-        <div class="bible-verses">
+        <div class="bible-font-bar">
+            <button class="bible-font-btn" onclick="bibleFontChange(-1)" aria-label="縮小字體">A－</button>
+            <span class="bible-font-size-label">${bibleFontSize}px</span>
+            <button class="bible-font-btn bible-font-btn-lg" onclick="bibleFontChange(1)" aria-label="放大字體">A＋</button>
+        </div>
+        <div class="bible-verses" style="font-size:${bibleFontSize}px">
             ${verses.map((v, i) => `<p class="bible-verse"><sup class="bible-verse-num">${chapter}:${i + 1}</sup>${escapeHtml(v)}</p>`).join('')}
         </div>
         <div class="bible-chapter-nav">
@@ -684,6 +692,22 @@ function bibleOpenBook(bookId) { bibleView = { bookId, chapter: null }; renderBi
 function bibleOpenChapter(bookId, chapter) { bibleView = { bookId, chapter }; renderBiblePage(); }
 function bibleBackToIndex() { bibleView = { bookId: null, chapter: null }; renderBiblePage(); }
 function bibleGoChapter(bookId, chapter) { bibleView = { bookId, chapter }; renderBiblePage(); }
+
+// 經文字體大小調整（A－ / A＋）：直接更新樣式、不重新渲染，保留目前閱讀位置
+function bibleFontChange(dir) {
+    const idx = BIBLE_FONT_SIZES.indexOf(bibleFontSize);
+    const next = BIBLE_FONT_SIZES[Math.min(BIBLE_FONT_SIZES.length - 1, Math.max(0, idx + dir))];
+    if (next === bibleFontSize) {
+        showToast(dir > 0 ? '已經是最大字體' : '已經是最小字體');
+        return;
+    }
+    bibleFontSize = next;
+    try { localStorage.setItem('bibleFontSize', String(bibleFontSize)); } catch (e) { /* 無法儲存也繼續 */ }
+    const verses = document.querySelector('#bibleContent .bible-verses');
+    if (verses) verses.style.fontSize = `${bibleFontSize}px`;
+    const label = document.querySelector('#bibleContent .bible-font-size-label');
+    if (label) label.textContent = `${bibleFontSize}px`;
+}
 
 function bibleSwitchVersion(ver) {
     if (BIBLE_VERSIONS.some(v => v.id === ver) && ver !== bibleVersion) {
