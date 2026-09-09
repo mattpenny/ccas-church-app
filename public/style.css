@@ -107,18 +107,27 @@
 }
 
 :root {
-    --primary: #6B4E9B;
-    --primary-dark: #5A3F85;
-    --primary-light: #8B6FB8;
-    --bg: #F5F2ED;
+    --purple-primary: #4a2e80;
+    --purple-light: #f3f0f8;
+    --pink-bg: #fff0f5;
+    --pink-accent: #c2185b;
+    --text-dark: #1f1f1f;
+    --text-muted: #8e8e93;
+    --border-radius-card: 16px;
+    --border-color: #f0f0f5;
+    --bg-main: #f8f8fc;
+
+    --primary: var(--purple-primary);
+    --primary-dark: #3a2370;
+    --primary-light: #6d55a8;
+    --bg: var(--bg-main);
     --card: #FFFFFF;
-    --text: #1A1A2E;
-    --text-muted: #6B6B7B;
+    --text: var(--text-dark);
     --text-light: #9B9BAD;
-    --border: #E8E4E0;
-    --shadow: 0 2px 8px rgba(0, 0, 0, .04);
+    --border: var(--border-color);
+    --shadow: 0 2px 6px rgba(0, 0, 0, .02);
     --shadow-lg: 0 4px 16px rgba(0, 0, 0, .08);
-    --radius: 12px;
+    --radius: var(--border-radius-card);
     --radius-sm: 10px;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -130,9 +139,9 @@ html, body {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg);
-    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: var(--bg-main);
+    color: var(--text-dark);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -157,11 +166,13 @@ body {
    ======================================== */
 
 .app-header {
-    background: transparent;
+    background: #ffffff;
     padding: 12px 16px 8px;
-    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
     width: 100%;
-    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .03);
 }
 
 .header-top {
@@ -176,13 +187,22 @@ body {
     gap: 12px;
 }
 
+.brand-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--purple-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .logo {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 20px;
     font-weight: 800;
-    color: var(--text);
+    color: var(--purple-primary);
 }
 
 .logo svg {
@@ -293,10 +313,10 @@ body {
 .hero-carousel {
     position: relative;
     height: 180px;
-    border-radius: var(--radius);
+    border-radius: 0 0 var(--border-radius-card) var(--border-radius-card);
     overflow: hidden;
     margin-bottom: 16px;
-    background: var(--bg);
+    background: var(--bg-main);
     width: 100%;
 }
 
@@ -461,43 +481,45 @@ body {
    卡片
    ======================================== */
 
+/* ========================================
+   首頁卡片（feed 風格）
+   ======================================== */
+
 .card-header {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
     width: 100%;
 }
 
 .card-icon {
-    font-size: 18px;
+    font-size: 1.4rem;
     flex-shrink: 0;
 }
 
 .card-date {
-    font-size: 11px;
-    color: var(--text-light);
-    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-muted);
     font-weight: 500;
     flex-shrink: 0;
 }
 
 .card-arrow {
-    font-size: 16px;
-    color: var(--text-light);
-    margin-left: auto;
+    font-size: 1.2rem;
+    color: var(--text-muted);
     flex-shrink: 0;
 }
 
 /* 講道大綱卡片 */
 .sermon-outline-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    margin-bottom: 10px;
+    background: #ffffff;
+    border-radius: var(--border-radius-card);
+    padding: 16px;
+    margin-bottom: 12px;
     margin-left: 12px;
     margin-right: 12px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .02);
+    border: 1px solid var(--border-color);
     cursor: pointer;
     transition: all .2s;
     display: flex;
@@ -508,7 +530,7 @@ body {
 }
 
 .sermon-outline-card:hover {
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
     transform: translateY(-2px);
 }
 
@@ -517,8 +539,9 @@ body {
 }
 
 .sermon-outline-card .card-header h3 {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-dark);
 }
 
 .sermon-outline-card .card-hint {
@@ -526,7 +549,6 @@ body {
     color: var(--text-muted);
     width: 100%;
     margin-top: 4px;
-    margin-left: 32px;
 }
 
 .sermon-outline-card .card-arrow {
@@ -535,14 +557,14 @@ body {
 
 /* 週報卡片 */
 .newsletter-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 14px 16px;
+    background: #ffffff;
+    border-radius: var(--border-radius-card);
+    padding: 16px;
     margin-bottom: 10px;
     margin-left: 12px;
     margin-right: 12px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .02);
+    border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -552,7 +574,7 @@ body {
 }
 
 .newsletter-card:hover {
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
     transform: translateY(-2px);
 }
 
@@ -561,19 +583,20 @@ body {
 }
 
 .newsletter-card .card-header h3 {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-dark);
 }
 
-/* 奉獻卡片 */
+/* 奉獻卡片（Pink 變體） */
 .give-card {
-    background: linear-gradient(135deg, #FDF2F8, #FCE7F3);
-    border-radius: var(--radius);
-    padding: 14px 16px;
+    background-color: var(--pink-bg);
+    border-radius: var(--border-radius-card);
+    padding: 16px;
     margin-bottom: 16px;
     margin-left: 12px;
     margin-right: 12px;
-    border: 1px solid #FBCFE8;
+    border: 1px solid #fce4ec;
     cursor: pointer;
     transition: all .2s;
     display: flex;
@@ -584,7 +607,7 @@ body {
 }
 
 .give-card:hover {
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
     transform: translateY(-2px);
 }
 
@@ -593,21 +616,20 @@ body {
 }
 
 .give-card .card-header h3 {
-    font-size: 14px;
-    font-weight: 600;
-    color: #BE185D;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--pink-accent);
 }
 
 .give-card .card-sub {
     font-size: 12px;
-    color: #9D174D;
+    color: var(--pink-accent);
     width: 100%;
     margin-top: 2px;
-    margin-left: 32px;
 }
 
 .give-card .card-arrow {
-    color: #BE185D;
+    color: var(--pink-accent);
 }
 
 /* ========================================
@@ -621,21 +643,22 @@ body {
 
 .section-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    align-items: center;
+    margin-top: 8px;
+    margin-bottom: 4px;
     width: 100%;
 }
 
 .section-header h3 {
-    font-size: 15px;
+    font-size: 1.1rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--text-dark);
 }
 
 .section-header a {
-    font-size: 12px;
-    color: var(--primary);
+    font-size: 0.9rem;
+    color: var(--purple-primary);
     text-decoration: none;
     font-weight: 600;
 }
@@ -1416,7 +1439,9 @@ body {
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--text-light);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
     transition: color .2s;
     padding: 4px 0;
     position: relative;
@@ -1424,19 +1449,20 @@ body {
 }
 
 .nav-item.active {
-    color: var(--primary);
+    color: var(--purple-primary);
+    font-weight: 700;
 }
 
 .nav-item.active::before {
     content: '';
     position: absolute;
-    top: -6px;
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 16px;
+    width: 24px;
     height: 3px;
-    border-radius: 2px;
-    background: var(--primary);
+    border-radius: 0 0 2px 2px;
+    background: var(--purple-primary);
 }
 
 .nav-item svg {
@@ -1445,7 +1471,7 @@ body {
 }
 
 .nav-item span {
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 600;
 }
 
@@ -1592,13 +1618,13 @@ body {
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg: #F5F2ED;
+        --bg: #f8f8fc;
         --card: #FFFFFF;
-        --text: #1A1A2E;
-        --text-muted: #6B6B7B;
+        --text: #1f1f1f;
+        --text-muted: #8e8e93;
         --text-light: #9B9BAD;
-        --border: #E8E4E0;
-        --shadow: 0 2px 8px rgba(0, 0, 0, .04);
+        --border: #f0f0f5;
+        --shadow: 0 2px 6px rgba(0, 0, 0, .02);
         --shadow-lg: 0 4px 16px rgba(0, 0, 0, .08);
     }
 
@@ -1629,18 +1655,18 @@ body {
     }
 
     .give-card {
-        background: linear-gradient(135deg, #FDF2F8, #FCE7F3) !important;
-        border-color: #FBCFE8 !important;
+        background-color: var(--pink-bg) !important;
+        border-color: #fce4ec !important;
     }
 
     .give-card .card-header h3 {
-        color: #BE185D !important;
+        color: var(--pink-accent) !important;
     }
     .give-card .card-sub {
-        color: #9D174D !important;
+        color: var(--pink-accent) !important;
     }
     .give-card .card-arrow {
-        color: #BE185D !important;
+        color: var(--pink-accent) !important;
     }
 
     .sermon-item .sermon-icon {
