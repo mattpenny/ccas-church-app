@@ -58,7 +58,7 @@ export async function getRssFeed(request, env, params = {}) {
         const podcastDescDefault = settings.podcast_description || settings.site_description || 'CCAC Granada Hills 基督教會講道音頻 Podcast';
         const podcastAuthor = settings.podcast_author || 'CCAC Granada Hills';
         const podcastImage = settings.podcast_image_url || '';
-        const podcastEmail = settings.podcast_email || 'podcast@ccacgranadahills.org';
+        const podcastEmail = settings.podcast_email || 'matt.cheang@gmail.com';
         const channelLink = settings.website_url || 'https://ccacgranadahills.org';
 
         // --- 若為系列 Feed，先讀取系列資訊 ---
