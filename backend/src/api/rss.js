@@ -15,6 +15,27 @@ function toRfc822(dateStr) {
     return isNaN(d.getTime()) ? new Date().toUTCString() : d.toUTCString();
 }
 
+// 檢查 iTunes owner email 是否為有效格式（Apple/Spotify 對無效 email 會警告）
+function isValidEmail(email) {
+    return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
+// iTunes duration 需符合 H:MM:SS / HH:MM:SS / MM:SS；不合規就省略，避免空標籤警告
+function itunesDuration(value) {
+    const v = String(value || '').trim();
+    if (!v) return '';
+    if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(v)) return v;
+    const m = v.match(/^(\d{1,2})\s*[分:]\s*(\d{1,2})\s*(?:秒)?$/);
+    if (m) return `${m[1]}:${m[2].padStart(2, '0')}`;
+    return '';
+}
+
+// Apple/Spotify 對 <description>/<itunes:summary> 上限約 4000 字元
+function clampText(value, max = 4000) {
+    const s = String(value || '').trim();
+    return s.length > max ? s.slice(0, max - 1) + '…' : s;
+}
+
 // 產生 Podcast RSS 2.0 + iTunes namespace 的 XML
 // 只包含有 MP3 音頻的已發布講道
 // params.seriesId：若指定，只輸出該系列的講道（獨立 Podcast Feed，供各系列分開提交到播客平台）
@@ -95,46 +116,58 @@ export async function getRssFeed(request, env, params = {}) {
             const hasVideo = s.video_id && s.video_id !== 'N/A' && s.video_id !== 'dQw4w9WgXcQ';
             const link = hasVideo && s.youtube_url ? s.youtube_url : audioUrl;
             const image = channelImage || s.series_cover_url || (s.series_cover_key ? `${base}/api/series/${s.series_id}/cover` : '');
-            const description = s.description || (s.series_title ? `${s.series_title}系列講道` : '');
-            const duration = s.duration || '';
+            const description = clampText(s.description || (s.series_title
+                ? `${s.series_title.replace(/系列$/, '')}系列講道`
+                : ''));
+            const duration = itunesDuration(s.duration);
 
             return `
     <item>
       <title>${esc(s.title)}</title>
       <link>${esc(link)}</link>
-      <guid isPermaLink="false">${esc(`${feedPath}#${s.id}`)}</guid>
+      <guid isPermaLink="false">${esc(`${base}${feedPath}#${s.id}`)}</guid>
       <pubDate>${toRfc822(s.date)}</pubDate>
       <description>${esc(description)}</description>
       <enclosure url="${esc(audioUrl)}" length="${s.audio_size || 0}" type="audio/mpeg"/>
       <itunes:author>${esc(s.speaker)}</itunes:author>
       <itunes:subtitle>${esc(s.series_title || '')}</itunes:subtitle>
       <itunes:summary>${esc(description)}</itunes:summary>
-      <itunes:duration>${esc(duration)}</itunes:duration>
+      ${duration ? `<itunes:duration>${duration}</itunes:duration>` : ''}
       <itunes:explicit>false</itunes:explicit>
       ${image ? `<itunes:image href="${esc(image)}"/>` : ''}
     </item>`;
         }).join('\n');
+
+        // 頻道層級封面：優先使用設定值，其次系列封面，最後用最新一篇講道的封面
+        const fallbackArtwork = (sermons || []).map(s =>
+            s.series_cover_url || (s.series_cover_key ? `${base}/api/series/${s.series_id}/cover` : '')
+        ).find(u => u) || '';
+        const channelArtwork = channelImage || fallbackArtwork;
+
+        // 只有當 name 與有效 email 都存在時才輸出 <itunes:owner>（Apple/Spotify 會驗證 email）
+        const ownerBlock = (isValidEmail(podcastEmail) && String(podcastAuthor || '').trim())
+            ? `\n    <itunes:owner>\n      <itunes:name>${esc(podcastAuthor)}</itunes:name>\n      <itunes:email>${esc(podcastEmail.trim())}</itunes:email>\n    </itunes:owner>`
+            : '';
+
+        const podcastDescClamped = clampText(podcastDesc);
 
         const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${esc(podcastTitle)}</title>
     <link>${esc(channelLink)}</link>
-    <description>${esc(podcastDesc)}</description>
+    <description>${esc(podcastDescClamped)}</description>
     <language>zh-tw</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${esc(`${base}${feedPath}`)}" rel="self" type="application/rss+xml"/>
     <itunes:author>${esc(podcastAuthor)}</itunes:author>
-    <itunes:summary>${esc(podcastDesc)}</itunes:summary>
-    <itunes:owner>
-      <itunes:name>${esc(podcastAuthor)}</itunes:name>
-      <itunes:email>${esc(podcastEmail)}</itunes:email>
-    </itunes:owner>
+    <itunes:summary>${esc(podcastDescClamped)}</itunes:summary>
+    ${ownerBlock}
     <itunes:category text="Religion &amp; Spirituality">
       <itunes:category text="Christianity"/>
     </itunes:category>
     <itunes:explicit>false</itunes:explicit>
-    ${channelImage ? `<itunes:image href="${esc(channelImage)}"/>` : ''}
+    ${channelArtwork ? `\n    <itunes:image href="${esc(channelArtwork)}"/>` : ''}
 ${items}
   </channel>
 </rss>`;
