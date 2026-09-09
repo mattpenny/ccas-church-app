@@ -1354,7 +1354,12 @@ function openYouTube(videoId) {
 function showPodcastModal() {
     const feedUrl = `${PODCAST_BASE_URL}/feed.xml`;
     showModalWithContent('🎙️ 播客訂閱 (RSS)', `
-        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">將以下連結提交到 Apple Podcasts、Spotify、Google Podcasts：</p>
+        <div class="info-row" style="margin-bottom:12px;" onclick="openExternal('https://open.spotify.com/show/3C0KX3UdfIO0UgtGGhkHdx')">
+            <span class="info-icon">🎧</span>
+            <span class="info-label">在 Spotify 收聽</span>
+            <span class="info-arrow">→</span>
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">把播客加入 Apple Podcasts、Spotify、Google Podcasts 等平台，新講道會自動出現：</p>
         <div class="copy-field">
             <code>${feedUrl}</code>
             <button class="copy-btn" onclick="copyRssLink()">複製</button>
