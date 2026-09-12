@@ -551,22 +551,25 @@ const BIBLE_FONT_SIZES = [15, 17, 19, 22, 25];   // 經文字體大小（px）�
 let bibleFontSize = parseInt(localStorage.getItem('bibleFontSize'), 10) || BIBLE_FONT_SIZES[0];
 if (!BIBLE_FONT_SIZES.includes(bibleFontSize)) bibleFontSize = BIBLE_FONT_SIZES[0];
 
-// ---- 粵語語音朗讀狀態（Web Speech API，零成本） ----
-// 依賴裝置內已安裝的粵語 TTS 語音（Android Google「廣東話」/ iOS Siri「香港中文」），
-// 建議使用「和合本」繁體譯本朗讀效果最佳（廣東話語音以繁體字朗讀最準確）。
+// ---- 粵語語音朗讀狀態 ----
+// 引擎 1：Web Speech API（Android Chrome 上的 Google 廣東話 / iOS Siri 香港中文）
+// 引擎 2（Android 備援）：Capacitor 原生 TTS plugin（@capacitor-community/text-to-speech）
+// 當 WebView 不支援 window.speechSynthesis 時，改用 Android 系統 TTS，裝置仍需廣東話語音
+const BIBLE_TTS_UNSUPPORTED_MSG = '此裝置不支援語音朗讀。請安裝「Google 文字轉語音」並下載「廣東話」語音，或將 App 更新到最新版本後再試';
 const bibleSpeech = {
-    supported: typeof window !== 'undefined' && 'speechSynthesis' in window,
-    synth: null,
+    supported: (typeof window !== 'undefined' && 'speechSynthesis' in window)
+        || !!(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech),
+    synth: (typeof window !== 'undefined' && 'speechSynthesis' in window) ? window.speechSynthesis : null,
+    native: !!(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech),
     voice: null,     // 目前選用的粵語語音
-    pref: 'auto',    // 語音偏好：auto | female | male | '語音名稱'
+    pref: 'auto',    // 語音偏好：auto | '語音名稱'
     running: false,  // 朗讀進行中
     paused: false,   // 暫停中
     verses: [],      // 目前章節經文陣列
-    index: 0         // 目前朗讀到第幾節
+    index: 0,        // 目前朗讀到第幾節
+    nativeTimer: null,   // 原生 TTS 無「播完」事件，用計時器估算完成
+    nativeOffsets: []    // 每節在整章文字中的起點（onRangeStart 高亮度用）
 };
-if (bibleSpeech.supported) {
-    bibleSpeech.synth = window.speechSynthesis;
-}
 // 讀取上次選用的語音偏好（舊版曾儲存 female/male，現統一以 Google 粵語為預設）
 try {
     const p = localStorage.getItem('bibleVoicePref');
@@ -784,8 +787,22 @@ function biblePillsHTML() {
 // 粵語語音朗讀（Web Speech API，零成本，需裝置已安裝粵語 TTS 語音）
 // ========================================
 
+let bibleNativeVoices = null; // 原生 TTS 語音清單快取
+
+async function bibleLoadNativeVoices() {
+    if (!bibleSpeech.native || bibleNativeVoices) return;
+    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.TextToSpeech) return;
+    try {
+        const r = await window.Capacitor.Plugins.TextToSpeech.getSupportedVoices();
+        bibleNativeVoices = (r && r.voices) || [];
+        bibleSpeechRefreshVoice();
+        bibleRefreshVoiceControl();
+    } catch (e) { /* 忽略 */ }
+}
+
 function bibleGetVoices() {
-    return bibleSpeech.supported ? ((bibleSpeech.synth && bibleSpeech.synth.getVoices()) || []) : [];
+    if (bibleSpeech.synth) return (bibleSpeech.synth.getVoices && bibleSpeech.synth.getVoices()) || [];
+    return bibleNativeVoices || [];
 }
 
 // 判斷是否為粵語語音（yue / zh-HK 優先，其次名稱含「粵語／香港」）
@@ -1129,8 +1146,15 @@ function biblePlayR2Audio() {
     }
 }
 
-// 語音清單可能是非同步載入（Chrome 等），尚未就緒時稍候重試
+// 語音清單可能是非同步載入（Chrome / 原生 TTS），尚未就緒時稍候重試
 function bibleSpeechEnsureVoice(cb) {
+    if (bibleSpeech.native && !bibleSpeech.synth) {
+        bibleLoadNativeVoices().then(() => {
+            bibleSpeechRefreshVoice();
+            cb(!!bibleSpeech.voice);
+        });
+        return;
+    }
     bibleSpeechRefreshVoice();
     if (bibleSpeech.voice) { cb(true); return; }
     let tries = 0;
@@ -1149,6 +1173,70 @@ function bibleSpeakText(text) {
     u.rate = 0.95;    // 朗讀聖經稍慢，更容易聽清
     u.pitch = 1;
     return u;
+}
+
+// ---- 原生 TTS 引擎（Android Capacitor plugin，WebView 無 speechSynthesis 時使用） ----
+
+function bibleNativeSpeakChapter(startIndex) {
+    const tts = window.Capacitor.Plugins.TextToSpeech;
+    const verses = bibleSpeech.verses || [];
+    const segs = verses.slice(startIndex);
+    if (!segs.length) return;
+    const text = segs.join('。\n');
+
+    // 記錄每節經文在整章文字中的起點，onRangeStart 用來高亮度「正在讀的經文」
+    bibleSpeech.nativeOffsets = [];
+    let off = 0;
+    segs.forEach((v, i) => {
+        bibleSpeech.nativeOffsets.push({ verse: startIndex + i, start: off });
+        off += v.length + 2; // 「。」＋換行
+    });
+
+    const voices = bibleNativeVoices || [];
+    const vi = bibleSpeech.voice
+        ? voices.findIndex(v => v.name === bibleSpeech.voice.name)
+        : -1;
+
+    tts.speak({
+        text,
+        lang: (bibleSpeech.voice && bibleSpeech.voice.lang) || 'yue-HK',
+        rate: 0.95,
+        pitch: 1,
+        queueStrategy: 0, // Flush：取代目前播放
+        category: 'ambient',
+        ...(vi >= 0 ? { voice: vi } : {})
+    });
+
+    // Android 原生 TTS 沒有「播完」事件，以文字長度估算完成時間
+    clearTimeout(bibleSpeech.nativeTimer);
+    const estMs = Math.max(3000, Math.round(text.length * 215 / 0.95));
+    bibleSpeech.nativeTimer = setTimeout(() => {
+        bibleSpeechStop();
+        showToast('本章已朗讀完畢 🎉');
+    }, estMs);
+}
+
+// 原生 TTS 的逐字範圍事件 → 高亮度目前經文
+if (bibleSpeech.native && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech) {
+    window.Capacitor.Plugins.TextToSpeech.addListener('onRangeStart', info => {
+        if (!bibleSpeech.running) return;
+        const offsets = bibleSpeech.nativeOffsets || [];
+        const start = info.start || 0;
+        let vi = offsets.length - 1;
+        for (let i = 0; i < offsets.length; i++) {
+            if (start < offsets[i].start) { vi = i - 1; break; }
+        }
+        if (vi < 0) vi = offsets.length - 1;
+        if (vi >= 0) {
+            const verse = offsets[vi].verse;
+            bibleSpeech.index = verse;
+            bibleSpeechHighlight(verse);
+            const container = document.getElementById('bibleContent');
+            const els = container ? container.querySelectorAll('.bible-verse') : [];
+            const el = els[verse];
+            if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+    });
 }
 
 function bibleSpeechHighlight(i) {
@@ -1171,9 +1259,9 @@ function bibleSpeechSetState(text) {
 }
 
 // 從指定經文開始朗讀
-function bibleStartSpeech(startIndex) {
+async function bibleStartSpeech(startIndex) {
     if (!bibleSpeech.supported) {
-        showToast('此裝置不支援語音朗讀');
+        showToast(BIBLE_TTS_UNSUPPORTED_MSG);
         return;
     }
     const verses = bibleSpeech.verses || [];
@@ -1189,15 +1277,21 @@ function bibleStartSpeech(startIndex) {
         const els = container.querySelectorAll('.bible-verse');
         if (!els.length || !container.contains(els[0])) return;
 
-        bibleSpeech.synth.cancel();
         bibleSpeech.running = true;
         bibleSpeech.paused = false;
         bibleSpeech.index = Math.max(0, Math.min(parseInt(startIndex, 10) || 0, verses.length - 1));
 
-        const u = bibleSpeakText(verses[bibleSpeech.index]);
-        u.onend = bibleSpeechNext;
-        u.onerror = () => bibleSpeechStop('朗讀中斷，請再試一次');
-        bibleSpeech.synth.speak(u);
+        if (bibleSpeech.synth) {
+            // Web Speech API：逐節朗讀，onend 串接下一節
+            bibleSpeech.synth.cancel();
+            const u = bibleSpeakText(verses[bibleSpeech.index]);
+            u.onend = bibleSpeechNext;
+            u.onerror = () => bibleSpeechStop('朗讀中斷，請再試一次');
+            bibleSpeech.synth.speak(u);
+        } else {
+            // 原生 TTS：一次朗讀整章，onRangeStart 高亮度目前經文
+            bibleNativeSpeakChapter(bibleSpeech.index);
+        }
 
         bibleSpeechHighlight(bibleSpeech.index);
         const el = els[bibleSpeech.index];
@@ -1233,11 +1327,17 @@ function bibleSpeechNext() {
 // 主控制鈕：播放／暫停切換
 function bibleToggleSpeech() {
     if (!bibleSpeech.supported) {
-        showToast('此裝置不支援語音朗讀');
+        showToast(BIBLE_TTS_UNSUPPORTED_MSG);
         return;
     }
     if (!bibleSpeech.running) {
         bibleStartSpeech(0);
+        return;
+    }
+    if (bibleSpeech.native && !bibleSpeech.synth) {
+        // 原生 TTS 不支援暫停：播放中再按＝停止，未播放＝開始
+        bibleStopSpeech(true);
+        showToast('已停止朗讀');
         return;
     }
     if (bibleSpeech.paused) {
@@ -1256,7 +1356,7 @@ function bibleToggleSpeech() {
 // 點擊某節經文→從該節開始朗讀
 function bibleSpeakVerseFrom(i) {
     if (!bibleSpeech.supported) {
-        showToast('此裝置不支援語音朗讀');
+        showToast(BIBLE_TTS_UNSUPPORTED_MSG);
         return;
     }
     const verses = bibleSpeech.verses || [];
@@ -1266,8 +1366,16 @@ function bibleSpeakVerseFrom(i) {
 
 // 停止朗讀並清除經文標示（切換章節／頁面／譯本時自動呼叫）
 function bibleStopSpeech(silent) {
-    if (bibleSpeech.supported && bibleSpeech.synth) {
+    if (bibleSpeech.synth) {
         try { bibleSpeech.synth.cancel(); } catch (e) { /* 忽略 */ }
+    }
+    if (bibleSpeech.native && !bibleSpeech.synth) {
+        try {
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech) {
+                window.Capacitor.Plugins.TextToSpeech.stop();
+            }
+        } catch (e) { /* 忽略 */ }
+        clearTimeout(bibleSpeech.nativeTimer);
     }
     bibleMusicStop(); // 停止朗讀時同步停止伴唱音樂
     if (bibleR2Audio) { // 停止 R2 聲音檔播放
