@@ -551,16 +551,17 @@ const BIBLE_FONT_SIZES = [15, 17, 19, 22, 25];   // 經文字體大小（px）�
 let bibleFontSize = parseInt(localStorage.getItem('bibleFontSize'), 10) || BIBLE_FONT_SIZES[0];
 if (!BIBLE_FONT_SIZES.includes(bibleFontSize)) bibleFontSize = BIBLE_FONT_SIZES[0];
 
-// ---- 粵語語音朗讀狀態 ----
-// 引擎 1：Web Speech API（Android Chrome 上的 Google 廣東話 / iOS Siri 香港中文）
-// 引擎 2（Android 備援）：Capacitor 原生 TTS plugin（@capacitor-community/text-to-speech）
-// 當 WebView 不支援 window.speechSynthesis 時，改用 Android 系統 TTS，裝置仍需廣東話語音
+// ---- 經文語音朗讀狀態 ----
+// 引擎 1（App 內首選）：Capacitor 原生 TTS plugin（@capacitor-community/text-to-speech）
+// 引擎 2（網頁）：Web Speech API（Chrome 上的 Google 語音 / iOS Siri 中文）
+// Android WebView 的 window.speechSynthesis 雖然存在，但不可靠——常只支援系統預設語言，
+// 其他語言（如英文）會靜默失敗。因此 App 內一律優先使用 Android 系統 TTS（原生引擎）。
 const BIBLE_TTS_UNSUPPORTED_MSG = '此裝置不支援語音朗讀。請安裝「Google 文字轉語音」並下載對應語音，或將 App 更新到最新版本後再試';
 // 各譯本對應的朗讀語言：繁體→廣東話、简体→普通話、KJV→English (USA)
 const BIBLE_TTS_LANG = {
-    cut: { lang: 'zh-HK', label: 'Google 粵語（預設）', name: '廣東話' },
-    cus: { lang: 'zh-CN', label: 'Google 普通話（預設）', name: '普通話' },
-    kjv: { lang: 'en-US', label: 'Google English US（預設）', name: 'English (US)' }
+    cut: { lang: 'zh-HK', name: '廣東話' },
+    cus: { lang: 'zh-CN', name: '普通話' },
+    kjv: { lang: 'en-US', name: 'English (US)' }
 };
 function bibleTargetLang() {
     const t = BIBLE_TTS_LANG[bibleVersion];
@@ -582,8 +583,13 @@ const bibleSpeech = {
     verses: [],      // 目前章節經文陣列
     index: 0,        // 目前朗讀到第幾節
     nativeTimer: null,   // 原生 TTS 無「播完」事件，用計時器估算完成
-    nativeOffsets: []    // 每節在整章文字中的起點（onRangeStart 高亮度用）
+    nativeOffsets: [],   // 每節在整章文字中的起點（onRangeStart 高亮度用）
+    useNative: false     // true＝使用原生 TTS（App 內首選）；false＝Web Speech API（網頁）
 };
+// App 內（Capacitor）一律優先使用原生 TTS：
+// Android WebView 的 window.speechSynthesis 雖然存在，但常只支援系統預設語言，
+// 其他語言（如英文）會靜默失敗；原生引擎直接使用 Android 系統 TTS，各語言都可靠。
+bibleSpeech.useNative = bibleSpeech.native;
 // 讀取上次選用的語音偏好（舊版曾儲存 female/male，現統一以 Google 粵語為預設）
 try {
     const p = localStorage.getItem('bibleVoicePref');
@@ -592,22 +598,23 @@ try {
 
 // ---- 伴唱音樂狀態（WebAudio 合成柔和環境和弦，無需音檔，$0） ----
 // 在粵語朗讀之下墊一層輕柔的「詩歌」氛圍，營造 thesinging.bible 式誦讀＋音樂效果
-const bibleMusic = {
-    ctx: null,       // AudioContext
-    buffer: null,    // 離線渲染好的 20 秒和弦環境音
-    source: null,    // 背景 bufferSource
-    gain: null,      // 主音量節點
-    enabled: true,   // 伴唱音樂開關
-    volume: 0.45,    // 伴唱音樂音量（0~1）
-    playing: false,  // 正在播放
-    rendering: false // 正在渲染音訊
-};
-try {
-    const m = localStorage.getItem('bibleMusic');
-    if (m === '0') bibleMusic.enabled = false;
-    const v = parseFloat(localStorage.getItem('bibleMusicVol'));
-    if (!isNaN(v)) bibleMusic.volume = Math.max(0, Math.min(1, v));
-} catch (e) { /* 忽略 */ }
+// const bibleMusic = {
+//     ctx: null,       // AudioContext
+//     buffer: null,    // 離線渲染好的 20 秒和弦環境音
+//     source: null,    // 背景 bufferSource
+//     gain: null,      // 主音量節點
+//     enabled: true,   // 伴唱音樂開關
+//     volume: 0.45,    // 伴唱音樂音量（0~1）
+//     playing: false,  // 正在播放
+//     rendering: false // 正在渲染音訊
+// };
+// try {
+//     const m = localStorage.getItem('bibleMusic');
+//     if (m === '0') bibleMusic.enabled = false;
+//     const v = parseFloat(localStorage.getItem('bibleMusicVol'));
+//     if (!isNaN(v)) bibleMusic.volume = Math.max(0, Math.min(1, v));
+// } catch (e) { /* 忽略 */ }
+
 
 let bibleR2Audio = null; // 目前播放中的聖經聲音檔（R2 串流）
 
@@ -814,8 +821,27 @@ async function bibleLoadNativeVoices() {
 }
 
 function bibleGetVoices() {
+    if (bibleSpeech.useNative) return bibleNativeVoices || [];
     if (bibleSpeech.synth) return (bibleSpeech.synth.getVoices && bibleSpeech.synth.getVoices()) || [];
     return bibleNativeVoices || [];
+}
+
+// 語音唯一識別碼：原生 TTS 的 name 是「顯示語言＋地區」（多個語音會重複），
+// 真正唯一的是 voiceURI；網頁語音兩者通常相同。
+function bibleVoiceId(v) {
+    return (v && (v.voiceURI || v.name)) || '';
+}
+
+// 清理原生 TTS 回傳的語言標籤（如「yue-HK-#Hans」→「yue-HK」），
+// 因為 Java 的 Locale.forLanguageTag 無法解析含「#」的標籤，會導致朗讀失敗。
+// 同時將底線替換為連字號（en_US → en-US），Android Locale 只接受連字號格式。
+function bibleCleanLangTag(tag) {
+    return String(tag || '')
+        .replace(/#.*$/, '')
+        .replace(/_/g, '-')
+        .split('-')
+        .slice(0, 2)
+        .join('-');
 }
 
 // 判斷語音是否符合目前譯本的朗讀語言
@@ -848,13 +874,13 @@ function isGoogleVoice(v) {
     return /google/i.test((v.name || '') + ' ' + (v.voiceURI || ''));
 }
 
-// 依偏好選出語音：預設 Google 語音優先，其次其他對應語言語音；亦支援「指定語音名稱」
+// 依偏好選出語音：優先 Google 語音，其次其他對應語言語音；亦支援「指定語音」
 function biblePickVoice() {
     const voices = bibleLangVoices();
     if (!voices.length) return null;
     const pref = bibleSpeech.pref;
     if (pref && pref !== 'auto') {
-        const exact = voices.find(v => v.name === pref);
+        const exact = voices.find(v => bibleVoiceId(v) === pref);
         if (exact) return exact;
     }
     return voices.find(isGoogleVoice) || voices[0];
@@ -868,19 +894,28 @@ function bibleSpeechRefreshVoice() {
     }
 }
 
-// 語音選擇器選單代碼（預設 Google 語音，另有裝置上所有對應語言語音可手動選）
+// 語音選擇器選單代碼（列出裝置上所有對應語言的朗讀語音，供手動選擇）
 function bibleVoiceOptionsHTML() {
     const voices = bibleLangVoices();
     const pref = bibleSpeech.pref || 'auto';
-    const defaultLabel = (BIBLE_TTS_LANG[bibleVersion] && BIBLE_TTS_LANG[bibleVersion].label) || '⭐ Google 語音（預設）';
-    let html = `<option value="auto" ${pref === 'auto' ? 'selected' : ''}>⭐ ${escapeHtml(defaultLabel)}</option>`;
-    if (voices.length) {
-        html += '<option disabled>── 裝置可用朗讀語音 ──</option>';
-        html += voices.map(v =>
-            `<option value="${escapeHtml(v.name)}" ${pref === v.name ? 'selected' : ''}>${escapeHtml(v.name)} (${escapeHtml(v.lang)})</option>`
-        ).join('');
-    }
-    return html;
+    // 清除 Android TTS 語音名稱中的裝飾標記（⭐、★、（預設）等），避免顯示誤導性資訊
+    const cleanName = s => String(s || '')
+        .replace(/[⭐★☆✦✧]/g, '')
+        .replace(/（預設）/g, '')
+        .replace(/\(預設\)/g, '')
+        .replace(/（默认）/g, '')
+        .replace(/\(默认\)/g, '')
+        .replace(/（默认语音）/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    return voices.map(v => {
+        const id = bibleVoiceId(v);
+        const lang = bibleCleanLangTag(v.lang);
+        const name = cleanName(v.name);
+        const uri = cleanName(v.voiceURI);
+        const label = (uri && uri !== name) ? `${name} · ${uri}` : name;
+        return `<option value="${escapeHtml(id)}" ${pref === id ? 'selected' : ''}>${escapeHtml(label)} (${escapeHtml(lang)})</option>`;
+    }).join('');
 }
 
 // 重新填滿語音選單（語音清單非同步載入後呼叫）
@@ -889,9 +924,16 @@ function bibleRefreshVoiceControl() {
     if (!sel) return;
     sel.innerHTML = bibleVoiceOptionsHTML();
     const pref = bibleSpeech.pref || 'auto';
-    if (pref === 'auto' || Array.from(sel.options).some(o => o.value === pref)) {
+    const opts = Array.from(sel.options);
+    const usedId = bibleSpeech.voice ? bibleVoiceId(bibleSpeech.voice) : '';
+    if (pref !== 'auto' && opts.some(o => o.value === pref)) {
         sel.value = pref;
+    } else if (usedId && opts.some(o => o.value === usedId)) {
+        sel.value = usedId; // 自動模式：顯示目前實際使用的語音
+    } else {
+        sel.selectedIndex = opts.length ? 0 : -1;
     }
+    sel.style.display = opts.length ? '' : 'none'; // 沒有可選語音時隱藏下拉選單
 }
 
 // 使用者變更語音偏好（女聲／男聲／指定語音）
@@ -916,6 +958,9 @@ if (bibleSpeech.supported && bibleSpeech.synth && bibleSpeech.synth.onvoiceschan
         bibleRefreshVoiceControl();
     };
 }
+
+// App 內：及早載入原生 TTS 語音清單，填滿語音選擇器（不必等按播放）
+if (bibleSpeech.native) bibleLoadNativeVoices();
 
 // ========================================
 // 伴唱音樂（WebAudio 即時合成柔和和弦墊底音）
@@ -1175,7 +1220,7 @@ function biblePlayR2Audio() {
 
 // 語音清單可能是非同步載入（Chrome / 原生 TTS），尚未就緒時稍候重試
 function bibleSpeechEnsureVoice(cb) {
-    if (bibleSpeech.native && !bibleSpeech.synth) {
+    if (bibleSpeech.useNative) {
         bibleLoadNativeVoices().then(() => {
             bibleSpeechRefreshVoice();
             cb(!!bibleSpeech.voice);
@@ -1187,8 +1232,18 @@ function bibleSpeechEnsureVoice(cb) {
     let tries = 0;
     const retry = () => {
         bibleSpeechRefreshVoice();
-        if (bibleSpeech.voice || tries >= 5) cb(!!bibleSpeech.voice);
-        else { tries++; setTimeout(retry, 250); }
+        if (bibleSpeech.voice || tries >= 5) {
+            if (bibleSpeech.voice || !bibleSpeech.native) {
+                cb(!!bibleSpeech.voice);
+            } else {
+                // 網頁語音清單找不到對應語音，但 App 內有原生 TTS → 改用原生引擎
+                bibleSpeech.useNative = true;
+                bibleLoadNativeVoices().then(() => {
+                    bibleSpeechRefreshVoice();
+                    cb(!!bibleSpeech.voice);
+                });
+            }
+        } else { tries++; setTimeout(retry, 250); }
     };
     setTimeout(retry, 250);
 }
@@ -1202,45 +1257,67 @@ function bibleSpeakText(text) {
     return u;
 }
 
-// ---- 原生 TTS 引擎（Android Capacitor plugin，WebView 無 speechSynthesis 時使用） ----
+// ---- 原生 TTS 引擎（Android Capacitor plugin，App 內首選引擎） ----
 
 function bibleNativeSpeakChapter(startIndex) {
     const tts = window.Capacitor.Plugins.TextToSpeech;
     const verses = bibleSpeech.verses || [];
     const segs = verses.slice(startIndex);
     if (!segs.length) return;
-    const text = segs.join('。\n');
+    const en = bibleTargetLang().startsWith('en');
+    const text = segs.join(en ? '.\n' : '。\n');
 
     // 記錄每節經文在整章文字中的起點，onRangeStart 用來高亮度「正在讀的經文」
     bibleSpeech.nativeOffsets = [];
     let off = 0;
     segs.forEach((v, i) => {
         bibleSpeech.nativeOffsets.push({ verse: startIndex + i, start: off });
-        off += v.length + 2; // 「。」＋換行
+        off += v.length + 2; // 分隔符＋換行
     });
 
     const voices = bibleNativeVoices || [];
-    const vi = bibleSpeech.voice
-        ? voices.findIndex(v => v.name === bibleSpeech.voice.name)
-        : -1;
+    const usedId = bibleSpeech.voice ? bibleVoiceId(bibleSpeech.voice) : '';
+    const vi = usedId ? voices.findIndex(v => bibleVoiceId(v) === usedId) : -1;
+    // 優先使用所選語音的語言標籤；沒有語音時用譯本目標語言（已清理格式）
+    const lang = bibleCleanLangTag((bibleSpeech.voice && bibleSpeech.voice.lang) || bibleTargetLang());
+
+    const done = () => {
+        clearTimeout(bibleSpeech.nativeTimer);
+        if (bibleSpeech.running) {
+            bibleSpeechStop();
+            showToast('本章已朗讀完畢 🎉');
+        }
+    };
+    const fail = (err) => {
+        clearTimeout(bibleSpeech.nativeTimer);
+        console.warn('原生 TTS 失敗:', err);
+        // Android WebView 的 Web Speech API 通常只支援系統預設語言，
+        // 英文等外語會靜默失敗；因此 App 內不退回 Web Speech API，直接報錯。
+        // 網頁版則可安全退回 Web Speech API。
+        if (!IS_NATIVE_APP && bibleSpeech.synth) {
+            bibleSpeech.useNative = false;
+            bibleStartSpeech(startIndex);
+        } else {
+            bibleSpeechStop('朗讀失敗，請確認裝置已安裝「' + bibleTargetName() + '」TTS 語音');
+        }
+    };
 
     tts.speak({
         text,
-        lang: (bibleSpeech.voice && bibleSpeech.voice.lang) || bibleTargetLang(),
+        lang,
         rate: 0.95,
         pitch: 1,
         queueStrategy: 0, // Flush：取代目前播放
         category: 'ambient',
         ...(vi >= 0 ? { voice: vi } : {})
-    });
+    }).then(done).catch(fail);
 
-    // Android 原生 TTS 沒有「播完」事件，以文字長度估算完成時間
+    // 安全網：speak() 的 Promise 正常會在整章播完後 resolve（onDone），
+    // 若裝置未回呼則以文字長度估算完成時間兜底（英文約 80ms/字、中文約 215ms/字）
     clearTimeout(bibleSpeech.nativeTimer);
-    const estMs = Math.max(3000, Math.round(text.length * 215 / 0.95));
-    bibleSpeech.nativeTimer = setTimeout(() => {
-        bibleSpeechStop();
-        showToast('本章已朗讀完畢 🎉');
-    }, estMs);
+    const msPerChar = en ? 80 : 215;
+    const estMs = Math.max(3000, Math.round(text.length * msPerChar / 0.95)) + 8000;
+    bibleSpeech.nativeTimer = setTimeout(done, estMs);
 }
 
 // 原生 TTS 的逐字範圍事件 → 高亮度目前經文
@@ -1308,7 +1385,7 @@ async function bibleStartSpeech(startIndex) {
         bibleSpeech.paused = false;
         bibleSpeech.index = Math.max(0, Math.min(parseInt(startIndex, 10) || 0, verses.length - 1));
 
-        if (bibleSpeech.synth) {
+        if (!bibleSpeech.useNative) {
             // Web Speech API：逐節朗讀，onend 串接下一節
             bibleSpeech.synth.cancel();
             const u = bibleSpeakText(verses[bibleSpeech.index]);
@@ -1324,7 +1401,6 @@ async function bibleStartSpeech(startIndex) {
         const el = els[bibleSpeech.index];
         if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
         bibleSpeechSetState('🔊 播放中');
-        bibleMusicStart(); // 開始朗讀時同步播放伴唱音樂
     });
 }
 
@@ -1361,7 +1437,7 @@ function bibleToggleSpeech() {
         bibleStartSpeech(0);
         return;
     }
-    if (bibleSpeech.native && !bibleSpeech.synth) {
+    if (bibleSpeech.useNative) {
         // 原生 TTS 不支援暫停：播放中再按＝停止，未播放＝開始
         bibleStopSpeech(true);
         showToast('已停止朗讀');
@@ -1371,12 +1447,10 @@ function bibleToggleSpeech() {
         bibleSpeech.synth.resume();
         bibleSpeech.paused = false;
         bibleSpeechSetState('🔊 播放中');
-        bibleMusicResume();
     } else {
         bibleSpeech.synth.pause();
         bibleSpeech.paused = true;
         bibleSpeechSetState('⏸ 已暫停');
-        bibleMusicPause();
     }
 }
 
@@ -1396,19 +1470,13 @@ function bibleStopSpeech(silent) {
     if (bibleSpeech.synth) {
         try { bibleSpeech.synth.cancel(); } catch (e) { /* 忽略 */ }
     }
-    if (bibleSpeech.native && !bibleSpeech.synth) {
+    if (bibleSpeech.useNative) {
         try {
             if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech) {
                 window.Capacitor.Plugins.TextToSpeech.stop();
             }
         } catch (e) { /* 忽略 */ }
         clearTimeout(bibleSpeech.nativeTimer);
-    }
-    bibleMusicStop(); // 停止朗讀時同步停止伴唱音樂
-    if (bibleR2Audio) { // 停止 R2 聲音檔播放
-        bibleR2Audio.pause();
-        const r2btn = document.getElementById('bibleR2Btn');
-        if (r2btn) r2btn.innerHTML = '📻 播放聲音檔';
     }
     if (bibleSpeech.running) {
         bibleSpeech.running = false;
