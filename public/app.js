@@ -555,7 +555,21 @@ if (!BIBLE_FONT_SIZES.includes(bibleFontSize)) bibleFontSize = BIBLE_FONT_SIZES[
 // 引擎 1：Web Speech API（Android Chrome 上的 Google 廣東話 / iOS Siri 香港中文）
 // 引擎 2（Android 備援）：Capacitor 原生 TTS plugin（@capacitor-community/text-to-speech）
 // 當 WebView 不支援 window.speechSynthesis 時，改用 Android 系統 TTS，裝置仍需廣東話語音
-const BIBLE_TTS_UNSUPPORTED_MSG = '此裝置不支援語音朗讀。請安裝「Google 文字轉語音」並下載「廣東話」語音，或將 App 更新到最新版本後再試';
+const BIBLE_TTS_UNSUPPORTED_MSG = '此裝置不支援語音朗讀。請安裝「Google 文字轉語音」並下載對應語音，或將 App 更新到最新版本後再試';
+// 各譯本對應的朗讀語言：繁體→廣東話、简体→普通話、KJV→English (USA)
+const BIBLE_TTS_LANG = {
+    cut: { lang: 'zh-HK', label: 'Google 粵語（預設）', name: '廣東話' },
+    cus: { lang: 'zh-CN', label: 'Google 普通話（預設）', name: '普通話' },
+    kjv: { lang: 'en-US', label: 'Google English US（預設）', name: 'English (US)' }
+};
+function bibleTargetLang() {
+    const t = BIBLE_TTS_LANG[bibleVersion];
+    return t ? t.lang : 'zh-HK';
+}
+function bibleTargetName() {
+    const t = BIBLE_TTS_LANG[bibleVersion];
+    return t ? t.name : '廣東話';
+}
 const bibleSpeech = {
     supported: (typeof window !== 'undefined' && 'speechSynthesis' in window)
         || !!(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech),
@@ -722,12 +736,11 @@ async function renderBibleChapter(container, bookId, chapter) {
         <div class="bible-audio-bar">
             <button class="bible-audio-btn" onclick="bibleToggleSpeech()">🔊 播放／暫停</button>
             <button class="bible-audio-btn" onclick="bibleStopSpeech()">⏹ 停止</button>
-            <select class="bible-audio-voice" id="bibleAudioVoice" onchange="bibleChangeVoice(this.value)" aria-label="選擇粵語語音">
+            <select class="bible-audio-voice" id="bibleAudioVoice" onchange="bibleChangeVoice(this.value)" aria-label="選擇朗讀語音">
                 ${bibleVoiceOptionsHTML()}
             </select>
             <input type="range" class="bible-music-vol" id="bibleMusicVol" min="0" max="100" step="1" value="${Math.round(bibleMusic.volume * 100)}" oninput="bibleMusicSetVolume(this.value)" aria-label="伴唱音樂音量">
             <span class="bible-audio-state" id="bibleAudioState"></span>
-            ${bibleVersion !== 'cut' ? '<span class="bible-audio-hint">粵語朗讀建議使用「和合本」效果最佳</span>' : ''}
         </div>
         <div class="bible-font-bar">
             <button class="bible-font-btn" onclick="bibleFontChange(-1)" aria-label="縮小字體">A－</button>
@@ -805,16 +818,29 @@ function bibleGetVoices() {
     return bibleNativeVoices || [];
 }
 
-// 判斷是否為粵語語音（yue / zh-HK 優先，其次名稱含「粵語／香港」）
-function isCantoneseVoice(v) {
-    const lang = (v.lang || '').replace('_', '-').toLowerCase();
+// 判斷語音是否符合目前譯本的朗讀語言
+function bibleVoiceMatchesTarget(v) {
+    const target = bibleTargetLang(); // zh-HK | zh-CN | en-US
+    const vl = (v.lang || '').replace('_', '-').toLowerCase();
     const name = (v.name || '').toLowerCase();
-    return lang.startsWith('yue') || lang.startsWith('zh-hk')
-        || name.includes('cantonese') || name.includes('粵語') || name.includes('香港');
+    if (target === 'zh-HK') {
+        return vl.startsWith('yue') || vl.startsWith('zh-hk')
+            || name.includes('cantonese') || name.includes('粵語') || name.includes('香港');
+    }
+    if (target === 'zh-CN') {
+        return vl.startsWith('zh-cn') || vl.startsWith('cmn')
+            || (vl.startsWith('zh') && !vl.startsWith('zh-hk') && !vl.startsWith('yue'))
+            || name.includes('mandarin') || name.includes('普通話') || name.includes('普通话')
+            || name.includes('簡體') || name.includes('简体');
+    }
+    if (target === 'en-US') {
+        return vl.startsWith('en');
+    }
+    return vl.startsWith(target.toLowerCase());
 }
 
-function bibleCantoneseVoices() {
-    return bibleGetVoices().filter(isCantoneseVoice);
+function bibleLangVoices() {
+    return bibleGetVoices().filter(bibleVoiceMatchesTarget);
 }
 
 // Google 語音最自然，作為首選（Chrome / Android 上通常是 Google 粵語）
@@ -822,9 +848,9 @@ function isGoogleVoice(v) {
     return /google/i.test((v.name || '') + ' ' + (v.voiceURI || ''));
 }
 
-// 依偏好選出語音：預設 Google 粵語優先，其次其他粵語語音；亦支援「指定語音名稱」
+// 依偏好選出語音：預設 Google 語音優先，其次其他對應語言語音；亦支援「指定語音名稱」
 function biblePickVoice() {
-    const voices = bibleCantoneseVoices();
+    const voices = bibleLangVoices();
     if (!voices.length) return null;
     const pref = bibleSpeech.pref;
     if (pref && pref !== 'auto') {
@@ -842,13 +868,14 @@ function bibleSpeechRefreshVoice() {
     }
 }
 
-// 語音選擇器選單代碼（預設 Google 粵語，另有裝置上所有粵語語音可手動選）
+// 語音選擇器選單代碼（預設 Google 語音，另有裝置上所有對應語言語音可手動選）
 function bibleVoiceOptionsHTML() {
-    const voices = bibleCantoneseVoices();
+    const voices = bibleLangVoices();
     const pref = bibleSpeech.pref || 'auto';
-    let html = `<option value="auto" ${pref === 'auto' ? 'selected' : ''}>⭐ Google 粵語（預設）</option>`;
+    const defaultLabel = (BIBLE_TTS_LANG[bibleVersion] && BIBLE_TTS_LANG[bibleVersion].label) || '⭐ Google 語音（預設）';
+    let html = `<option value="auto" ${pref === 'auto' ? 'selected' : ''}>⭐ ${escapeHtml(defaultLabel)}</option>`;
     if (voices.length) {
-        html += '<option disabled>── 裝置可用粵語語音 ──</option>';
+        html += '<option disabled>── 裝置可用朗讀語音 ──</option>';
         html += voices.map(v =>
             `<option value="${escapeHtml(v.name)}" ${pref === v.name ? 'selected' : ''}>${escapeHtml(v.name)} (${escapeHtml(v.lang)})</option>`
         ).join('');
@@ -1168,7 +1195,7 @@ function bibleSpeechEnsureVoice(cb) {
 
 function bibleSpeakText(text) {
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'zh-HK'; // 廣東話（香港）
+    u.lang = bibleTargetLang(); // 繁體→廣東話 zh-HK、简体→普通話 zh-CN、KJV→en-US
     if (bibleSpeech.voice) u.voice = bibleSpeech.voice;
     u.rate = 0.95;    // 朗讀聖經稍慢，更容易聽清
     u.pitch = 1;
@@ -1199,7 +1226,7 @@ function bibleNativeSpeakChapter(startIndex) {
 
     tts.speak({
         text,
-        lang: (bibleSpeech.voice && bibleSpeech.voice.lang) || 'yue-HK',
+        lang: (bibleSpeech.voice && bibleSpeech.voice.lang) || bibleTargetLang(),
         rate: 0.95,
         pitch: 1,
         queueStrategy: 0, // Flush：取代目前播放
@@ -1270,7 +1297,7 @@ async function bibleStartSpeech(startIndex) {
 
     bibleSpeechEnsureVoice(ok => {
         if (!ok) {
-            showToast('未偵測到粵語語音，請在裝置安裝「廣東話」TTS 語音後再試');
+            showToast('未偵測到「' + bibleTargetName() + '」語音，請在裝置安裝對應語言的 TTS 語音後再試');
             return;
         }
         // 非同步等候語音期間可能已切換章節，重新確認

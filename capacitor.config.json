@@ -1,7 +1,7 @@
 {
     "appId":  "com.ccas.churchapp",
     "webDir":  "public",
-    "appName":  "CCAS App",
+    "appName":  "CCAC App",
     "server":  {
                    "cleartext":  true,
                    "url":  "https://ccac-api.ccac-church.workers.dev",
