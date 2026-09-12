@@ -9,6 +9,7 @@ import { getRssFeed } from './api/rss.js';
 import { getEvents, getEvent, createEvent, updateEvent, deleteEvent } from './api/events.js';
 import { getAnnouncements, getAnnouncement, createAnnouncement, updateAnnouncement, deleteAnnouncement } from './api/announcements.js';
 import { getDocuments, getDocument, uploadDocument, deleteDocument, downloadDocument } from './api/documents.js';
+import { getBibleAudio } from './api/bibleAudio.js';
 
 export default {
     async fetch(request, env, ctx) {
@@ -136,6 +137,16 @@ async function handleRequest(request, env, ctx) {
             const id = path.split('/')[3];
             if (method === 'GET') return getDocument(request, env, { id });
             if (method === 'DELETE') return deleteDocument(request, env, { id });
+        }
+
+        // --- BIBLE AUDIO (R2 音頻檔) ---
+        // 串流聖經音頻檔：/api/bible/audio.mp3?ver=cut&book=1&ch=1
+        if ((path === '/api/bible/audio.mp3' || path === '/api/bible/audio') && method === 'GET') {
+            const u = new URL(request.url);
+            const ver = u.searchParams.get('ver') || 'cut';
+            const book = u.searchParams.get('book');
+            const ch = u.searchParams.get('ch');
+            if (book && ch) return getBibleAudio(request, env, { ver, book, ch });
         }
 
         // --- STATIC ASSETS FALLBACK ---
