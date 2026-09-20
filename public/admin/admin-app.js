@@ -1567,6 +1567,31 @@ function showAddModal(type) {
                 <button class="btn-upload secondary" onclick="closeModal()">取消</button>
             `;
             break;
+
+        case 'password':
+            html = `
+                <h3>🔑 更改密碼</h3>
+                <p class="subtitle">更改後所有裝置都需要重新登入</p>
+                <div class="form-group">
+                    <label>目前密碼 <span style="color:#EF4444;">*</span></label>
+                    <input type="password" id="curPassword" autocomplete="current-password" onkeydown="if(event.key==='Enter') submitPasswordChange()">
+                </div>
+                <div class="form-group">
+                    <label>新密碼 <span style="color:#EF4444;">*</span></label>
+                    <input type="password" id="newPassword" placeholder="至少 8 個字元" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label>確認新密碼 <span style="color:#EF4444;">*</span></label>
+                    <input type="password" id="confirmPassword" autocomplete="new-password" onkeydown="if(event.key==='Enter') submitPasswordChange()">
+                </div>
+                <small style="color:var(--text-light);font-size:11px;display:block;margin-bottom:12px;">
+                    💡 更改後請用新密碼重新登入。<br>
+                    🔑 Cloudflare 後台的 ADMIN_PASSWORD 始終可作為「主密碼」登入（救援用）；在 Cloudflare 修改它之後，新密碼同樣立即生效。
+                </small>
+                <button class="btn-upload" onclick="submitPasswordChange()">💾 更新密碼</button>
+                <button class="btn-upload secondary" onclick="closeModal()">取消</button>
+            `;
+            break;
     }
     
     body.innerHTML = html;
@@ -1642,6 +1667,64 @@ function submitSiteLinks() {
         }
     })
     .catch(() => showToast('儲存失敗，請檢查網路', 'error'));
+}
+
+// 更改管理員密碼（PUT /api/auth/password）
+// 成功後所有裝置的 token 立即失效 → 自動登出，需用新密碼重新登入
+function submitPasswordChange() {
+    const curEl = document.getElementById('curPassword');
+    const newEl = document.getElementById('newPassword');
+    const confirmEl = document.getElementById('confirmPassword');
+
+    const currentPassword = curEl ? curEl.value : '';
+    const newPassword = newEl ? newEl.value : '';
+    const confirmPassword = confirmEl ? confirmEl.value : '';
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        showToast('請填寫所有密碼欄位', 'error');
+        return;
+    }
+    if (newPassword.length < 8) {
+        showToast('新密碼至少需要 8 個字元', 'error');
+        return;
+    }
+    if (newPassword !== confirmPassword) {
+        showToast('兩次輸入的新密碼不一致', 'error');
+        return;
+    }
+    if (newPassword === currentPassword) {
+        showToast('新密碼不可與目前密碼相同', 'error');
+        return;
+    }
+
+    showToast('⏳ 正在更新密碼...');
+
+    cachedFetch(`${API_URL}/api/auth/password`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            current_password: currentPassword,
+            new_password: newPassword
+        })
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            showToast('✅ 密碼已更新，請重新登入', 'success');
+            token = null;
+            localStorage.removeItem('adminToken');
+            setTimeout(() => {
+                closeModal();
+                showLogin();
+            }, 1200);
+        } else {
+            showToast('更新失敗: ' + (res.error || '未知錯誤'), 'error');
+        }
+    })
+    .catch(() => showToast('更新失敗，請檢查網路', 'error'));
 }
 
 // ============================================================
@@ -2044,6 +2127,7 @@ window.escapeHtml = escapeHtml;
 window.moveSermon = moveSermon;
 window.submitSiteLinks = submitSiteLinks;
 window.loadSiteLinks = loadSiteLinks;
+window.submitPasswordChange = submitPasswordChange;
 
 console.log('📊 CCAC Admin Panel 已載入');
 console.log('🔐 管理後台版本 2.0.0');

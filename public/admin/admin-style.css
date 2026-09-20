@@ -360,6 +360,7 @@ body {
 .btn-add.teal { background: linear-gradient(135deg, #2A9D8F, #1A7A6E); }
 .btn-add.rose { background: linear-gradient(135deg, #C94C72, #A8385A); }
 .btn-add.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+.btn-add.navy { background: linear-gradient(135deg, #64748B, #334155); }
 
 /* ========================================
    標籤頁
@@ -936,6 +937,7 @@ body {
     .btn-add.teal { background: linear-gradient(135deg, #2A9D8F, #1A7A6E) !important; }
     .btn-add.rose { background: linear-gradient(135deg, #C94C72, #A8385A) !important; }
     .btn-add.blue { background: linear-gradient(135deg, #3B82F6, #1D4ED8) !important; }
+    .btn-add.navy { background: linear-gradient(135deg, #64748B, #334155) !important; }
 
     .stat-icon.purple { background: #F0E6FF !important; }
     .stat-icon.gold { background: #FFF4E0 !important; }

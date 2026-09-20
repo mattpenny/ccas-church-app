@@ -1,5 +1,5 @@
 ﻿import { cors } from './utils/cors.js';
-import { handleAuth } from './api/auth.js';
+import { handleAuth, handlePasswordChange } from './api/auth.js';
 import { getSermons, getSermon, createSermon, updateSermon, deleteSermon, reorderSermons,
          uploadSermonAudio, getSermonAudio, deleteSermonAudio,
          uploadSermonPdf, getSermonPdf, deleteSermonPdf } from './api/sermons.js';
@@ -48,6 +48,10 @@ async function handleRequest(request, env, ctx) {
         // --- AUTH ROUTES ---
         if (path === '/api/auth/login' && method === 'POST') {
             return handleAuth(request, env);
+        }
+        // 更改管理員密碼（需登入 + 目前密碼）
+        if (path === '/api/auth/password' && ['PUT', 'PATCH', 'POST'].includes(method)) {
+            return handlePasswordChange(request, env);
         }
 
         // --- SERMONS ROUTES ---

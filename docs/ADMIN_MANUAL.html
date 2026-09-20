@@ -95,7 +95,7 @@
 <p>登入後第一頁是儀表板：</p>
 <ul>
   <li><strong>統計卡片</strong>：講道、文檔、活動、公告的數量。點卡片可直接跳到對應分頁。</li>
-  <li><strong>快速新增按鈕</strong>：🎬 新增講道、📚 新增系列、📄 上傳文檔、📅 新增活動、📢 新增公告、🔗 更新連結。</li>
+  <li><strong>快速新增按鈕</strong>：🎬 新增講道、📚 新增系列、📄 上傳文檔、📅 新增活動、📢 新增公告、🔗 更新連結、🔑 更改密碼。</li>
   <li><strong>底部導覽列</strong>：講道、系列、文檔、活動、公告 五個分頁，隨時切換。</li>
 </ul>
 
@@ -114,6 +114,16 @@
 </table>
 <div class="tip">💡 可省略 <code>https://</code>（例如輸入 <code>facebook.com/ccacgh</code>，系統會自動補上）；把欄位<strong>留空</strong>儲存 = 恢復系統預設值。</div>
 <div class="warn">⚠️ 只接受 <code>http://</code> 或 <code>https://</code> 網址；格式錯誤會顯示提示且不會儲存。</div>
+
+<h3>2.2 🔑 更改密碼</h3>
+<p>在儀表板按「<strong>🔑 更改密碼</strong>」（在「🔗 更新連結」旁邊）：</p>
+<ol>
+  <li>輸入<strong>目前密碼</strong>、<strong>新密碼</strong>（至少 8 個字元），再輸入一次確認。</li>
+  <li>按「<strong>💾 更新密碼</strong>」→ 成功後會自動登出，請用<strong>新密碼</strong>重新登入。</li>
+</ol>
+<div class="tip">💡 更改密碼後，<strong>所有裝置</strong>的登入狀態都會立即失效，需要重新登入（安全性設計）。</div>
+<div class="tip">🔑 Cloudflare 後台的 <code>ADMIN_PASSWORD</code>（Secret）<strong>始終可以用來登入</strong>（主密碼／救援用）；在 Cloudflare 修改 Secret 之後，新密碼同樣立即生效，並會讓所有裝置重新登入。</div>
+<div class="warn">⚠️ 忘記自訂密碼時：直接用 Cloudflare Secret 的密碼登入 → 再到「🔑 更改密碼」設定新密碼即可，不需要操作資料庫。</div>
 
 <h2 id="sec3">3. 講道管理</h2>
 
