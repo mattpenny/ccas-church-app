@@ -2,8 +2,8 @@
 
 > 適用對象：會眾／一般使用者
 > 網頁版網址：`https://ccac-api.ccac-church.workers.dev/`
-> 手機 App：Android（CCAS App）；iPhone 可用 Safari 開啟網頁版 →「分享 → 加入主畫面」
-> 最後更新：2026-09-07
+> 手機 App：Android（CCAC App）；iPhone 可用 Safari 開啟網頁版 →「分享 → 加入主畫面」
+> 最後更新：2026-09-19
 
 ---
 

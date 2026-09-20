@@ -1341,13 +1341,6 @@ body {
     border-color: var(--primary-light);
 }
 
-.bible-music-vol {
-    width: 90px;
-    height: 4px;
-    accent-color: var(--primary);
-    cursor: pointer;
-}
-
 .bible-audio-hint {
     font-size: 10px;
     color: var(--text-light);
@@ -1621,6 +1614,16 @@ body {
 
 .modal-close:hover {
     background: var(--primary-dark);
+}
+
+/* 次要按鈕（例如奉獻彈窗的「關閉」） */
+.modal-close.secondary {
+    background: var(--border-color);
+    color: var(--text-dark);
+}
+
+.modal-close.secondary:hover {
+    background: #e5e5ec;
 }
 
 /* ========================================

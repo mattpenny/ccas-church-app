@@ -29,10 +29,18 @@ function cacheBust(url) {
 /**
  * 帶有快取破壞的 fetch 包裝函式
  * 所有 API 呼叫都應該使用此函式，確保取得最新資料
+ * 若 token 已失效／過期（401），自動清除登入狀態並回到登入頁
  */
 async function cachedFetch(url, options = {}) {
     const cacheBustedUrl = cacheBust(url);
-    return fetch(cacheBustedUrl, options);
+    const res = await fetch(cacheBustedUrl, options);
+    if (res.status === 401 && token) {
+        token = null;
+        localStorage.removeItem('adminToken');
+        showLogin();
+        showToast('登入已逾時，請重新登入', 'error');
+    }
+    return res;
 }
 
 // ============================================================
@@ -1535,6 +1543,30 @@ function showAddModal(type) {
                 <button class="btn-upload secondary" onclick="closeModal()">取消</button>
             `;
             break;
+
+        case 'settings':
+            html = `
+                <h3>🔗 更新連結</h3>
+                <p class="subtitle">App「更多」頁與「奉獻給 CCAC」彈窗顯示的網址</p>
+                <div class="form-group">
+                    <label>📘 Facebook 專頁網址</label>
+                    <input type="url" id="siteLinkFacebook" placeholder="https://facebook.com/你的專頁">
+                </div>
+                <div class="form-group">
+                    <label>❤️ 奉獻給 CCAC（線上奉獻連結）</label>
+                    <input type="url" id="siteLinkGive" placeholder="https://ccacgranadahills.org/give">
+                </div>
+                <div class="form-group">
+                    <label>🌐 CCAC 網站網址</label>
+                    <input type="url" id="siteLinkWebsite" placeholder="https://ccacgranadahills.org">
+                </div>
+                <small style="color:var(--text-light);font-size:11px;display:block;margin-bottom:12px;">
+                    💡 可省略 https://（系統會自動補上）；留空則恢復預設值。儲存後 App 即時生效，不用重新上架。
+                </small>
+                <button class="btn-upload" onclick="submitSiteLinks()">💾 儲存連結</button>
+                <button class="btn-upload secondary" onclick="closeModal()">取消</button>
+            `;
+            break;
     }
     
     body.innerHTML = html;
@@ -1543,6 +1575,73 @@ function showAddModal(type) {
     if (type === 'sermon') {
         populateSeriesSelect('sermonSeries', null);
     }
+
+    if (type === 'settings') {
+        loadSiteLinks();
+    }
+}
+
+// ============================================================
+// SITE LINKS（Facebook / 奉獻 / CCAC 網站 網址設定）
+// 儲存於資料庫 settings 表，App 前台即時套用
+// ============================================================
+
+// 載入目前設定並填入「🔗 更新連結」表單
+function loadSiteLinks() {
+    cachedFetch(`${API_URL}/api/settings`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success || !data.data) {
+                showToast('載入連結設定失敗', 'error');
+                return;
+            }
+
+            const values = {
+                siteLinkFacebook: data.data.facebook_url,
+                siteLinkGive: data.data.give_url,
+                siteLinkWebsite: data.data.website_url
+            };
+
+            Object.keys(values).forEach(id => {
+                const el = document.getElementById(id);
+                if (el && values[id]) el.value = values[id];
+            });
+        })
+        .catch(() => showToast('載入連結設定失敗，請檢查網路', 'error'));
+}
+
+// 儲存連結設定（PUT /api/settings）
+function submitSiteLinks() {
+    const facebookEl = document.getElementById('siteLinkFacebook');
+    const giveEl = document.getElementById('siteLinkGive');
+    const websiteEl = document.getElementById('siteLinkWebsite');
+
+    const data = {
+        facebook_url: facebookEl ? facebookEl.value.trim() : '',
+        give_url: giveEl ? giveEl.value.trim() : '',
+        website_url: websiteEl ? websiteEl.value.trim() : ''
+    };
+
+    showToast('⏳ 正在儲存連結...');
+
+    cachedFetch(`${API_URL}/api/settings`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            showToast('✅ 連結已更新，App 即時生效！', 'success');
+            closeModal();
+        } else {
+            showToast('儲存失敗: ' + (res.error || '未知錯誤'), 'error');
+        }
+    })
+    .catch(() => showToast('儲存失敗，請檢查網路', 'error'));
 }
 
 // ============================================================
@@ -1943,6 +2042,8 @@ window.toggleSermonGroup = toggleSermonGroup;
 window.loadSermons = loadSermons;
 window.escapeHtml = escapeHtml;
 window.moveSermon = moveSermon;
+window.submitSiteLinks = submitSiteLinks;
+window.loadSiteLinks = loadSiteLinks;
 
 console.log('📊 CCAC Admin Panel 已載入');
 console.log('🔐 管理後台版本 2.0.0');

@@ -9,13 +9,14 @@ import { getRssFeed } from './api/rss.js';
 import { getEvents, getEvent, createEvent, updateEvent, deleteEvent } from './api/events.js';
 import { getAnnouncements, getAnnouncement, createAnnouncement, updateAnnouncement, deleteAnnouncement } from './api/announcements.js';
 import { getDocuments, getDocument, uploadDocument, deleteDocument, downloadDocument } from './api/documents.js';
+import { getSettings, updateSettings } from './api/settings.js';
 import { getBibleAudio } from './api/bibleAudio.js';
 
 export default {
     async fetch(request, env, ctx) {
         const method = request.method;
         if (method === 'OPTIONS') {
-            return new Response(null, { headers: cors() });
+            return new Response(null, { headers: cors(request) });
         }
 
         // HEAD → 當作 GET 處理（Apple Podcasts 要求 feed 與 enclosure URL 必須支援 HTTP HEAD）
@@ -123,6 +124,12 @@ async function handleRequest(request, env, ctx) {
             if (method === 'DELETE') return deleteAnnouncement(request, env, { id });
         }
 
+        // --- SETTINGS ROUTES（網站／社群連結設定）---
+        if (path === '/api/settings' && method === 'GET') return getSettings(request, env);
+        if (path === '/api/settings' && ['PUT', 'PATCH', 'POST'].includes(method)) {
+            return updateSettings(request, env);
+        }
+
         // --- DOCUMENTS ROUTES ---
         if (path === '/api/documents' && method === 'GET') return getDocuments(request, env);
         // 同時支援 /api/documents 與 /api/documents/upload
@@ -163,6 +170,6 @@ async function handleRequest(request, env, ctx) {
             path: path
         }), {
             status: 404,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }

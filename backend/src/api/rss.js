@@ -1,4 +1,4 @@
-import { cors } from '../utils/cors.js';
+﻿import { cors } from '../utils/cors.js';
 
 function esc(value) {
     return String(value === null || value === undefined ? '' : value)
@@ -43,7 +43,7 @@ function clampText(value, max = 4000) {
 export async function getRssFeed(request, env, params = {}) {
     try {
         if (request.method === 'OPTIONS') {
-            return new Response(null, { headers: cors() });
+            return new Response(null, { headers: cors(request) });
         }
 
         const url = new URL(request.url);
@@ -58,7 +58,9 @@ export async function getRssFeed(request, env, params = {}) {
         const podcastDescDefault = settings.podcast_description || settings.site_description || 'CCAC Granada Hills 基督教會講道音頻 Podcast';
         const podcastAuthor = settings.podcast_author || 'CCAC Granada Hills';
         const podcastImage = settings.podcast_image_url || '';
-        const podcastEmail = settings.podcast_email || 'matt.cheang@gmail.com';
+        // 不再內建個人 email 作為後備值；請於後台設定 podcast_email
+        // （未設定時 feed 不會輸出 <itunes:owner>，亦不會洩漏任何個人資料）
+        const podcastEmail = settings.podcast_email || '';
         const channelLink = settings.website_url || 'https://ccacgranadahills.org';
 
         // --- 若為系列 Feed，先讀取系列資訊 ---
@@ -71,7 +73,7 @@ export async function getRssFeed(request, env, params = {}) {
             if (!series) {
                 return new Response('Series not found', {
                     status: 404,
-                    headers: { 'Content-Type': 'text/plain; charset=utf-8', ...cors() }
+                    headers: { 'Content-Type': 'text/plain; charset=utf-8', ...cors(request) }
                 });
             }
         }
@@ -176,13 +178,14 @@ ${items}
             headers: {
                 'Content-Type': 'application/rss+xml; charset=utf-8',
                 'Cache-Control': 'public, max-age=600',
-                ...cors()
+                ...cors(request)
             }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, error: error.message }), {
+        console.error('API error:', error && error.message);
+        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }

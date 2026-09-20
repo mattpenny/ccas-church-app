@@ -29,6 +29,12 @@ npm-debug.log*
 dist/
 build/
 
+# App binaries (不要提交 APK／簽章檔；內含整套前端程式碼)
+*.apk
+*.aab
+*.jks
+*.keystore
+
 # Database
 *.sqlite
 *.sqlite-journal

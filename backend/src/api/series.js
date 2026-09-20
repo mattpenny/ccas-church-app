@@ -1,27 +1,27 @@
-import { cors } from '../utils/cors.js';
+﻿import { cors } from '../utils/cors.js';
 import { verifyAuth } from './auth.js';
 
 const ALLOWED_COVER_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_COVER_SIZE = 5 * 1024 * 1024; // 5MB
 
-function unauthorized() {
+function unauthorized(request) {
     return new Response(JSON.stringify({ success: false, error: '未授權' }), {
         status: 401,
-        headers: { 'Content-Type': 'application/json', ...cors() }
+        headers: { 'Content-Type': 'application/json', ...cors(request) }
     });
 }
 
-function badRequest(error) {
+function badRequest(request, error) {
     return new Response(JSON.stringify({ success: false, error }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...cors() }
+        headers: { 'Content-Type': 'application/json', ...cors(request) }
     });
 }
 
-function serverError(error) {
-    return new Response(JSON.stringify({ success: false, error: error.message }), {
+function serverError(request, error) {
+    return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', ...cors() }
+        headers: { 'Content-Type': 'application/json', ...cors(request) }
     });
 }
 
@@ -39,10 +39,10 @@ function withCover(series) {
 
 export async function getSeries(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
     try {
-        const isAuth = verifyAuth(request);
+        const isAuth = await verifyAuth(request, env);
         const query = isAuth
             ? `SELECT s.*,
                       (SELECT COUNT(*) FROM sermons x WHERE x.series_id = s.id) AS sermon_count
@@ -56,28 +56,29 @@ export async function getSeries(request, env) {
         const { results } = await env.DB.prepare(query).all();
         const data = (results || []).map(s => withCover(s));
         return new Response(JSON.stringify({ success: true, data }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return serverError(error);
+        console.error('API error:', error && error.message);
+        return serverError(request, error);
     }
 }
 
 export async function getSeriesDetail(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
     try {
         const { id } = params;
         const series = await getSeriesById(env, id);
-        if (!series || (!verifyAuth(request) && series.published !== 1)) {
+        if (!series || (!(await verifyAuth(request, env)) && series.published !== 1)) {
             return new Response(JSON.stringify({ success: false, error: '系列不存在' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
-        const isAuth = verifyAuth(request);
+        const isAuth = await verifyAuth(request, env);
         const query = isAuth
             ? `SELECT s.*, ser.title AS series_title,
                       ser.cover_url AS series_cover_url, ser.cover_key AS series_cover_key
@@ -102,19 +103,20 @@ export async function getSeriesDetail(request, env, params) {
                 sermons: sermons
             }
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return serverError(error);
+        console.error('API error:', error && error.message);
+        return serverError(request, error);
     }
 }
 
 // 重新排序系列：接收 { ids: [3, 1, 2] }，依陣列順序寫入 sort_order = 0, 1, 2...
 export async function reorderSeries(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
-    if (!verifyAuth(request)) return unauthorized();
+    if (!(await verifyAuth(request, env))) return unauthorized(request);
 
     try {
         const data = await request.json();
@@ -123,7 +125,7 @@ export async function reorderSeries(request, env) {
             : null;
 
         if (!ids || ids.length === 0) {
-            return badRequest('請提供系列 ID 順序陣列');
+            return badRequest(request, '請提供系列 ID 順序陣列');
         }
 
         const stmts = ids.map((id, index) =>
@@ -132,22 +134,23 @@ export async function reorderSeries(request, env) {
         await env.DB.batch(stmts);
 
         return new Response(JSON.stringify({ success: true, message: '排序更新成功' }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return serverError(error);
+        console.error('API error:', error && error.message);
+        return serverError(request, error);
     }
 }
 
 export async function createSeries(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
-    if (!verifyAuth(request)) return unauthorized();
+    if (!(await verifyAuth(request, env))) return unauthorized(request);
 
     try {
         const data = await request.json();
-        if (!data.title) return badRequest('系列名稱為必填');
+        if (!data.title) return badRequest(request, '系列名稱為必填');
 
         const result = await env.DB.prepare(`
             INSERT INTO sermon_series (title, subtitle, title_en, description, description_en, cover_url, sort_order, published)
@@ -165,17 +168,18 @@ export async function createSeries(request, env) {
 
         const series = await getSeriesById(env, result.meta.last_row_id);
         return new Response(JSON.stringify({ success: true, data: withCover(series), message: '系列建立成功' }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return serverError(error);
+        console.error('API error:', error && error.message);
+        return serverError(request, error);
     }
 }
 export async function updateSeries(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
-    if (!verifyAuth(request)) return unauthorized();
+    if (!(await verifyAuth(request, env))) return unauthorized(request);
 
     try {
         const { id } = params;
@@ -191,30 +195,31 @@ export async function updateSeries(request, env, params) {
             }
         }
 
-        if (fields.length === 0) return badRequest('沒有需要更新的欄位');
+        if (fields.length === 0) return badRequest(request, '沒有需要更新的欄位');
 
         values.push(id);
         await env.DB.prepare(`UPDATE sermon_series SET ${fields.join(', ')} WHERE id = ?`).bind(...values).run();
 
         const series = await getSeriesById(env, id);
         return new Response(JSON.stringify({ success: true, data: withCover(series), message: '系列更新成功' }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return serverError(error);
+        console.error('API error:', error && error.message);
+        return serverError(request, error);
     }
 }
 
 export async function deleteSeries(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
-    if (!verifyAuth(request)) return unauthorized();
+    if (!(await verifyAuth(request, env))) return unauthorized(request);
 
     try {
         const { id } = params;
         const series = await getSeriesById(env, id);
-        if (!series) return badRequest('系列不存在');
+        if (!series) return badRequest(request, '系列不存在');
 
         if (env.R2 && series.cover_key) {
             await env.R2.delete(series.cover_key);
@@ -225,33 +230,34 @@ export async function deleteSeries(request, env, params) {
         await env.DB.prepare('DELETE FROM sermon_series WHERE id = ?').bind(id).run();
 
         return new Response(JSON.stringify({ success: true, message: '系列刪除成功' }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return serverError(error);
+        console.error('API error:', error && error.message);
+        return serverError(request, error);
     }
 }
 
 export async function uploadSeriesCover(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
-    if (!verifyAuth(request)) return unauthorized();
+    if (!(await verifyAuth(request, env))) return unauthorized(request);
 
     try {
         const { id } = params;
         const series = await getSeriesById(env, id);
-        if (!series) return badRequest('系列不存在');
+        if (!series) return badRequest(request, '系列不存在');
 
         const formData = await request.formData();
         const cover = formData.get('cover');
-        if (!cover) return badRequest('請選擇封面圖片');
+        if (!cover) return badRequest(request, '請選擇封面圖片');
 
         if (!ALLOWED_COVER_TYPES.includes(cover.type)) {
-            return badRequest('不支援的圖片格式（請使用 JPG、PNG、WEBP、GIF）');
+            return badRequest(request, '不支援的圖片格式（請使用 JPG、PNG、WEBP、GIF）');
         }
         if (cover.size > MAX_COVER_SIZE) {
-            return badRequest('封面圖片太大（上限 5MB）');
+            return badRequest(request, '封面圖片太大（上限 5MB）');
         }
 
         const ext = cover.type.split('/')[1] === 'jpeg' ? 'jpg' : cover.type.split('/')[1];
@@ -274,16 +280,17 @@ export async function uploadSeriesCover(request, env, params) {
 
         const updated = await getSeriesById(env, id);
         return new Response(JSON.stringify({ success: true, data: withCover(updated), message: '封面上傳成功' }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return serverError(error);
+        console.error('API error:', error && error.message);
+        return serverError(request, error);
     }
 }
 
 export async function getSeriesCover(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
     try {
         const { id } = params;
@@ -291,13 +298,13 @@ export async function getSeriesCover(request, env, params) {
         if (!series || !series.cover_key) {
             return new Response(JSON.stringify({ success: false, error: '封面不存在' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
         if (!env.R2) {
             return new Response(JSON.stringify({ success: false, error: 'R2 儲存未設置' }), {
                 status: 500,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -305,18 +312,19 @@ export async function getSeriesCover(request, env, params) {
         if (!object) {
             return new Response(JSON.stringify({ success: false, error: '封面檔案不存在' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
         const headers = {
             'Content-Type': object.httpMetadata?.contentType || 'image/png',
             'Cache-Control': 'public, max-age=86400',
-            ...cors()
+            ...cors(request)
         };
 
         return new Response(object.body, { headers });
     } catch (error) {
-        return serverError(error);
+        console.error('API error:', error && error.message);
+        return serverError(request, error);
     }
 }

@@ -3,11 +3,11 @@ import { verifyAuth } from './auth.js';
 
 export async function getAnnouncements(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
-        const isAuth = verifyAuth(request);
+        const isAuth = await verifyAuth(request, env);
         const query = isAuth 
             ? 'SELECT * FROM announcements ORDER BY created_at DESC, sort_order DESC'
             : 'SELECT * FROM announcements WHERE published = 1 ORDER BY created_at DESC, sort_order DESC';
@@ -18,22 +18,23 @@ export async function getAnnouncements(request, env) {
             success: true,
             data: results || []
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function getAnnouncement(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
@@ -48,7 +49,7 @@ export async function getAnnouncement(request, env, params) {
                 error: 'Announcement not found'
             }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
         
@@ -56,31 +57,32 @@ export async function getAnnouncement(request, env, params) {
             success: true,
             data: results[0]
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function createAnnouncement(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: 'Unauthorized'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -94,7 +96,7 @@ export async function createAnnouncement(request, env) {
                     error: `Missing required field: ${field}`
                 }), {
                     status: 400,
-                    headers: { 'Content-Type': 'application/json', ...cors() }
+                    headers: { 'Content-Type': 'application/json', ...cors(request) }
                 });
             }
         }
@@ -133,31 +135,32 @@ export async function createAnnouncement(request, env) {
             data: results[0],
             message: 'Announcement created successfully'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function updateAnnouncement(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: 'Unauthorized'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -190,7 +193,7 @@ export async function updateAnnouncement(request, env, params) {
                 error: 'No fields to update'
             }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -208,31 +211,32 @@ export async function updateAnnouncement(request, env, params) {
             data: results[0],
             message: 'Announcement updated successfully'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function deleteAnnouncement(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: 'Unauthorized'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -246,15 +250,16 @@ export async function deleteAnnouncement(request, env, params) {
             success: true,
             message: 'Announcement deleted successfully'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }

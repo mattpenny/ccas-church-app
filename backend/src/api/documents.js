@@ -15,7 +15,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function getDocuments(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
@@ -24,7 +24,7 @@ export async function getDocuments(request, env) {
         const limit = parseInt(url.searchParams.get('limit')) || 100;
         const offset = parseInt(url.searchParams.get('offset')) || 0;
         
-        const isAuth = verifyAuth(request);
+        const isAuth = await verifyAuth(request, env);
         let query = 'SELECT * FROM documents';
         let params = [];
         
@@ -53,22 +53,23 @@ export async function getDocuments(request, env) {
             success: true,
             data: documents
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function getDocument(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
@@ -83,7 +84,7 @@ export async function getDocument(request, env, params) {
                 error: '找不到文檔'
             }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
         
@@ -91,31 +92,32 @@ export async function getDocument(request, env, params) {
             success: true,
             data: results[0]
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function uploadDocument(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: '未授權'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -132,7 +134,7 @@ export async function uploadDocument(request, env) {
                 error: '請選擇檔案並填寫標題'
             }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -142,7 +144,7 @@ export async function uploadDocument(request, env) {
                 error: '不支援的檔案格式。請上傳 PDF、JPG、PNG 或 Word 檔案'
             }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -152,7 +154,7 @@ export async function uploadDocument(request, env) {
                 error: '檔案太大，請上傳小於 10MB 的檔案'
             }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -197,31 +199,32 @@ export async function uploadDocument(request, env) {
             data: results[0],
             message: '文檔上傳成功'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function deleteDocument(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: '未授權'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -238,7 +241,7 @@ export async function deleteDocument(request, env, params) {
                 error: '找不到文檔'
             }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -254,22 +257,23 @@ export async function deleteDocument(request, env, params) {
             success: true,
             message: '文檔刪除成功'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function downloadDocument(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
@@ -285,7 +289,7 @@ export async function downloadDocument(request, env, params) {
                 error: '找不到文檔'
             }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -295,7 +299,7 @@ export async function downloadDocument(request, env, params) {
                 error: 'R2 儲存未設置'
             }), {
                 status: 500,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -307,24 +311,25 @@ export async function downloadDocument(request, env, params) {
                 error: '檔案不存在'
             }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
         const headers = {
             'Content-Type': object.httpMetadata?.contentType || 'application/octet-stream',
             'Content-Disposition': `inline; filename="${results[0].file_name}"`,
-            ...cors()
+            ...cors(request)
         };
 
         return new Response(object.body, { headers });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }

@@ -13,7 +13,7 @@ function mapSermon(s) {
 
 export async function getSermons(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
@@ -23,7 +23,7 @@ export async function getSermons(request, env) {
         const limit = parseInt(url.searchParams.get('limit')) || 100;
         const offset = parseInt(url.searchParams.get('offset')) || 0;
         
-        const isAuth = verifyAuth(request);
+        const isAuth = await verifyAuth(request, env);
         let query = 'SELECT * FROM sermons';
         let params = [];
         
@@ -59,15 +59,16 @@ export async function getSermons(request, env) {
             limit,
             offset
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
@@ -75,12 +76,12 @@ export async function getSermons(request, env) {
 // 重新排序講道（系列內手動排序）：接收 { ids: [6, 5, 7] }，依陣列順序寫入 sort_order = 0, 1, 2...
 export async function reorderSermons(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({ success: false, error: '未授權' }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -93,7 +94,7 @@ export async function reorderSermons(request, env) {
         if (!ids || ids.length === 0) {
             return new Response(JSON.stringify({ success: false, error: '請提供講道 ID 順序陣列' }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -103,19 +104,20 @@ export async function reorderSermons(request, env) {
         await env.DB.batch(stmts);
 
         return new Response(JSON.stringify({ success: true, message: '排序更新成功' }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, error: error.message }), {
+        console.error('API error:', error && error.message);
+        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function getSermon(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
@@ -133,7 +135,7 @@ export async function getSermon(request, env, params) {
                 error: 'Sermon not found'
             }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
         
@@ -141,31 +143,32 @@ export async function getSermon(request, env, params) {
             success: true,
             data: mapSermon(results[0])
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function createSermon(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: 'Unauthorized'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -179,7 +182,7 @@ export async function createSermon(request, env) {
                     error: `Missing required field: ${field}`
                 }), {
                     status: 400,
-                    headers: { 'Content-Type': 'application/json', ...cors() }
+                    headers: { 'Content-Type': 'application/json', ...cors(request) }
                 });
             }
         }
@@ -250,32 +253,32 @@ export async function createSermon(request, env) {
             data: mapSermon(results[0]),
             message: 'Sermon created successfully'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
         console.error('Create Sermon Error:', error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function updateSermon(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: 'Unauthorized'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -305,7 +308,7 @@ export async function updateSermon(request, env, params) {
                 error: 'No fields to update'
             }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -323,31 +326,32 @@ export async function updateSermon(request, env, params) {
             data: mapSermon(results[0]),
             message: 'Sermon updated successfully'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function deleteSermon(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: 'Unauthorized'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -376,15 +380,16 @@ export async function deleteSermon(request, env, params) {
             success: true,
             message: 'Sermon deleted successfully'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
@@ -397,12 +402,12 @@ const MAX_AUDIO_SIZE = 90 * 1024 * 1024; // 90MB（Workers 請求上限）
 
 export async function uploadSermonAudio(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({ success: false, error: '未授權' }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -412,7 +417,7 @@ export async function uploadSermonAudio(request, env, params) {
         if (!results || results.length === 0) {
             return new Response(JSON.stringify({ success: false, error: '講道不存在' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -421,21 +426,21 @@ export async function uploadSermonAudio(request, env, params) {
         if (!audio) {
             return new Response(JSON.stringify({ success: false, error: '請選擇音頻檔案' }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
         if (!audio.type.startsWith('audio/') && audio.type !== 'application/octet-stream') {
             return new Response(JSON.stringify({ success: false, error: '不支援的檔案格式，請上傳 MP3 音頻' }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
         if (audio.size > MAX_AUDIO_SIZE) {
             return new Response(JSON.stringify({ success: false, error: '音頻檔案太大（上限 90MB）' }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -469,18 +474,19 @@ export async function uploadSermonAudio(request, env, params) {
             data: mapSermon(updated.results[0]),
             message: '音頻上傳成功'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, error: error.message }), {
+        console.error('API error:', error && error.message);
+        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 export async function getSermonAudio(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
@@ -492,14 +498,14 @@ export async function getSermonAudio(request, env, params) {
         if (!results || results.length === 0 || !results[0].audio_key) {
             return new Response(JSON.stringify({ success: false, error: '此講道尚無音頻' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
         if (!env.R2) {
             return new Response(JSON.stringify({ success: false, error: 'R2 儲存未設置' }), {
                 status: 500,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -507,7 +513,7 @@ export async function getSermonAudio(request, env, params) {
         if (!object) {
             return new Response(JSON.stringify({ success: false, error: '音頻檔案不存在' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -516,7 +522,7 @@ export async function getSermonAudio(request, env, params) {
             'Content-Type': 'audio/mpeg',
             'Accept-Ranges': 'bytes',
             'Cache-Control': 'public, max-age=3600',
-            ...cors()
+            ...cors(request)
         };
 
         const rangeHeader = request.headers.get('Range');
@@ -550,20 +556,21 @@ export async function getSermonAudio(request, env, params) {
             }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, error: error.message }), {
+        console.error('API error:', error && error.message);
+        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 export async function deleteSermonAudio(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({ success: false, error: '未授權' }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -583,12 +590,13 @@ export async function deleteSermonAudio(request, env, params) {
         }
 
         return new Response(JSON.stringify({ success: true, message: '音頻刪除成功' }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, error: error.message }), {
+        console.error('API error:', error && error.message);
+        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
@@ -602,12 +610,12 @@ const MAX_PDF_SIZE = 20 * 1024 * 1024; // 20MB
 
 export async function uploadSermonPdf(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({ success: false, error: '未授權' }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -617,7 +625,7 @@ export async function uploadSermonPdf(request, env, params) {
         if (!results || results.length === 0) {
             return new Response(JSON.stringify({ success: false, error: '講道不存在' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -626,21 +634,21 @@ export async function uploadSermonPdf(request, env, params) {
         if (!pdf) {
             return new Response(JSON.stringify({ success: false, error: '請選擇 PDF 檔案' }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
         if (pdf.type !== 'application/pdf') {
             return new Response(JSON.stringify({ success: false, error: '請上傳 PDF 檔案' }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
         if (pdf.size > MAX_PDF_SIZE) {
             return new Response(JSON.stringify({ success: false, error: 'PDF 檔案太大（上限 20MB）' }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -673,19 +681,20 @@ export async function uploadSermonPdf(request, env, params) {
             data: mapSermon(updated.results[0]),
             message: 'PDF 上傳成功'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, error: error.message }), {
+        console.error('API error:', error && error.message);
+        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function getSermonPdf(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
@@ -697,14 +706,14 @@ export async function getSermonPdf(request, env, params) {
         if (!results || results.length === 0 || !results[0].pdf_key) {
             return new Response(JSON.stringify({ success: false, error: '此講道尚無 PDF' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
         if (!env.R2) {
             return new Response(JSON.stringify({ success: false, error: 'R2 儲存未設置' }), {
                 status: 500,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -712,7 +721,7 @@ export async function getSermonPdf(request, env, params) {
         if (!object) {
             return new Response(JSON.stringify({ success: false, error: 'PDF 檔案不存在' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -720,26 +729,27 @@ export async function getSermonPdf(request, env, params) {
             'Content-Type': 'application/pdf',
             'Content-Disposition': `inline; filename="${results[0].pdf_name}"`,
             'Cache-Control': 'public, max-age=3600',
-            ...cors()
+            ...cors(request)
         };
 
         return new Response(object.body, { headers });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, error: error.message }), {
+        console.error('API error:', error && error.message);
+        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function deleteSermonPdf(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({ success: false, error: '未授權' }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -759,12 +769,13 @@ export async function deleteSermonPdf(request, env, params) {
         }
 
         return new Response(JSON.stringify({ success: true, message: 'PDF 刪除成功' }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, error: error.message }), {
+        console.error('API error:', error && error.message);
+        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }

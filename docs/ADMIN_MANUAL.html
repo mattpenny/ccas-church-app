@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -63,7 +63,7 @@
   <p>適用對象：教會網站／App 的內容管理員（上傳講道、管理系列、公告等）</p>
   <p class="cover-url">後台網址：https://ccac-api.ccac-church.workers.dev/admin/</p>
   <p>會眾使用說明：docs/USER_MANUAL.md</p>
-  <p>最後更新：2026-09-07</p>
+  <p>最後更新：2026-09-19</p>
 </div>
 
 <nav class="toc">
@@ -85,8 +85,8 @@
 <h2 id="sec1">1. 登入與登出</h2>
 <ol>
   <li>用瀏覽器（手機或電腦皆可）開啟後台網址。</li>
-  <li>輸入<strong>管理員密碼</strong>後按「登入」。密碼由系統管理員設定（Cloudflare 環境變數 <code>ADMIN_PASSWORD</code>）。可按輸入框右邊的 👁 按鈕顯示／隱藏密碼。</li>
-  <li>登入狀態會保留在瀏覽器中，下次開啟不必重新輸入。</li>
+  <li>輸入<strong>管理員密碼</strong>後按「登入」。密碼由系統管理員設定（Cloudflare Secret <code>ADMIN_PASSWORD</code>，以 <code>wrangler secret put ADMIN_PASSWORD</code> 設定；切勿寫入 <code>wrangler.toml</code>）。可按輸入框右邊的 👁 按鈕顯示／隱藏密碼。</li>
+  <li>登入狀態會保留在瀏覽器中，<strong>有效期 12 小時</strong>；逾期或系統更新後會自動回到登入頁，請重新輸入密碼。</li>
   <li>離開時（尤其共用電腦）請按右上角「<strong>登出</strong>」。</li>
 </ol>
 <div class="tip">💡 建議把後台網址加到書籤／手機主畫面，方便每週更新講道。</div>
@@ -95,9 +95,25 @@
 <p>登入後第一頁是儀表板：</p>
 <ul>
   <li><strong>統計卡片</strong>：講道、文檔、活動、公告的數量。點卡片可直接跳到對應分頁。</li>
-  <li><strong>快速新增按鈕</strong>：🎬 新增講道、📚 新增系列、📄 上傳文檔、📅 新增活動、📢 新增公告。</li>
+  <li><strong>快速新增按鈕</strong>：🎬 新增講道、📚 新增系列、📄 上傳文檔、📅 新增活動、📢 新增公告、🔗 更新連結。</li>
   <li><strong>底部導覽列</strong>：講道、系列、文檔、活動、公告 五個分頁，隨時切換。</li>
 </ul>
+
+<h3>2.1 🔗 更新連結（Facebook／奉獻／CCAC 網站）</h3>
+<p>App「更多」頁的 <strong>Facebook</strong>、<strong>CCAC 網站</strong>，以及「奉獻給 CCAC」彈窗的網址都由此處設定，<strong>儲存後即時生效</strong>，不用重新上架 App：</p>
+<ol>
+  <li>在儀表板按「<strong>🔗 更新連結</strong>」（在「📢 新增公告」右邊）。</li>
+  <li>修改需要的欄位（對照下表）。</li>
+  <li>按「<strong>💾 儲存連結</strong>」即完成。</li>
+</ol>
+<table>
+  <tr><th>欄位</th><th>App 中顯示位置</th></tr>
+  <tr><td>📘 Facebook 專頁網址</td><td>「更多」頁 → Facebook</td></tr>
+  <tr><td>❤️ 奉獻給 CCAC</td><td>首頁「奉獻給 CCAC」卡片 → 彈窗「前往奉獻」按鈕</td></tr>
+  <tr><td>🌐 CCAC 網站網址</td><td>「更多」頁 → CCAC 網站（同時用作播客 Feed 的網站連結）</td></tr>
+</table>
+<div class="tip">💡 可省略 <code>https://</code>（例如輸入 <code>facebook.com/ccacgh</code>，系統會自動補上）；把欄位<strong>留空</strong>儲存 = 恢復系統預設值。</div>
+<div class="warn">⚠️ 只接受 <code>http://</code> 或 <code>https://</code> 網址；格式錯誤會顯示提示且不會儲存。</div>
 
 <h2 id="sec3">3. 講道管理</h2>
 
@@ -260,13 +276,14 @@
 
 <h2 id="sec10">10. 安全注意事項</h2>
 <ul>
-  <li><strong>請勿把密碼告訴不需使用後台的人</strong>；密碼更改請聯絡系統管理員（Cloudflare <code>ADMIN_PASSWORD</code> 變數）。</li>
-  <li>目前登入頁面下方有密碼提示文字（<code>public/admin/index.html</code> 內），<strong>正式上線前建議移除該行</strong>。</li>
+  <li><strong>請勿把密碼告訴不需使用後台的人</strong>；密碼更改請聯絡系統管理員（Cloudflare Secret <code>ADMIN_PASSWORD</code>，用 <code>wrangler secret put ADMIN_PASSWORD</code> 設定）。</li>
+  <li>登入頁面不會顯示任何密碼提示；請妥善保管密碼，並只授予需要使用後台的同工。</li>
   <li>共用電腦使用後，請務必按「登出」。</li>
+  <li>登入憑證以管理員密碼作 <strong>HMAC-SHA256 簽章</strong>並附帶 <strong>12 小時有效期</strong>；密碼本身不會被儲存在系統或瀏覽器內，過期後請重新登入。</li>
   <li>上傳檔案請使用教會自行拍攝／製作或已授權的內容，避免版權問題。</li>
 </ul>
 
-<footer>CCAC Granada Hills 教會 App — 管理員使用手冊 v1.1（2026-09-07）<br>會眾使用說明請見 docs/USER_MANUAL.md · 技術支援請聯絡系統管理員</footer>
+<footer>CCAC Granada Hills 教會 App — 管理員使用手冊 v1.2（2026-09-19）<br>會眾使用說明請見 docs/USER_MANUAL.md · 技術支援請聯絡系統管理員</footer>
 
 </body>
 </html>

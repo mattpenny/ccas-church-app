@@ -3,11 +3,11 @@ import { verifyAuth } from './auth.js';
 
 export async function getEvents(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
-        const isAuth = verifyAuth(request);
+        const isAuth = await verifyAuth(request, env);
         const query = isAuth 
             ? 'SELECT * FROM events ORDER BY start_date ASC, sort_order DESC'
             : 'SELECT * FROM events WHERE published = 1 ORDER BY start_date ASC, sort_order DESC';
@@ -18,22 +18,23 @@ export async function getEvents(request, env) {
             success: true,
             data: results || []
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function getEvent(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
@@ -48,7 +49,7 @@ export async function getEvent(request, env, params) {
                 error: 'Event not found'
             }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
         
@@ -56,31 +57,32 @@ export async function getEvent(request, env, params) {
             success: true,
             data: results[0]
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function createEvent(request, env) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: 'Unauthorized'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -94,7 +96,7 @@ export async function createEvent(request, env) {
                     error: `Missing required field: ${field}`
                 }), {
                     status: 400,
-                    headers: { 'Content-Type': 'application/json', ...cors() }
+                    headers: { 'Content-Type': 'application/json', ...cors(request) }
                 });
             }
         }
@@ -132,31 +134,32 @@ export async function createEvent(request, env) {
             data: results[0],
             message: 'Event created successfully'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function updateEvent(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: 'Unauthorized'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -186,7 +189,7 @@ export async function updateEvent(request, env, params) {
                 error: 'No fields to update'
             }), {
                 status: 400,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -204,31 +207,32 @@ export async function updateEvent(request, env, params) {
             data: results[0],
             message: 'Event updated successfully'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
 
 export async function deleteEvent(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
-    if (!verifyAuth(request)) {
+    if (!(await verifyAuth(request, env))) {
         return new Response(JSON.stringify({
             success: false,
             error: 'Unauthorized'
         }), {
             status: 401,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 
@@ -242,15 +246,16 @@ export async function deleteEvent(request, env, params) {
             success: true,
             message: 'Event deleted successfully'
         }), {
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     } catch (error) {
+        console.error('API error:', error && error.message);
         return new Response(JSON.stringify({
             success: false,
-            error: error.message
+            error: 'Internal server error'
         }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }

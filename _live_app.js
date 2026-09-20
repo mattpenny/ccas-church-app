@@ -15,51 +15,6 @@ const API_URL = IS_NATIVE_APP ? 'https://ccac-api.ccac-church.workers.dev' : '';
 const PODCAST_BASE_URL = 'https://ccac-api.ccac-church.workers.dev';
 
 // ========================================
-// 後台設定的連結（管理後台「🔗 更新連結」可修改）
-// 讀取失敗時使用以下預設值，確保 App 功能不受影響
-// ========================================
-
-const DEFAULT_SITE_LINKS = {
-    facebook_url: 'https://facebook.com',
-    give_url: 'https://ccacgranadahills.org/give',
-    website_url: 'https://ccacgranadahills.org'
-};
-
-let siteLinks = { ...DEFAULT_SITE_LINKS };
-
-/**
- * 從後台設定載入網址（公開 API，失敗時靜默沿用預設值）
- */
-function loadSiteLinks() {
-    return cachedFetch(`${API_URL}/api/settings`)
-        .then(res => res.json())
-        .then(data => {
-            if (!data || !data.success || !data.data) return;
-            siteLinks = {
-                facebook_url: data.data.facebook_url || DEFAULT_SITE_LINKS.facebook_url,
-                give_url: data.data.give_url || DEFAULT_SITE_LINKS.give_url,
-                website_url: data.data.website_url || DEFAULT_SITE_LINKS.website_url
-            };
-        })
-        .catch(() => {});
-}
-
-/**
- * 開啟後台設定的連結
- * key：'facebook' | 'give' | 'website'
- */
-function openSiteLink(key) {
-    const map = { facebook: 'facebook_url', give: 'give_url', website: 'website_url' };
-    const url = siteLinks[map[key] || 'website_url'];
-    if (!url) {
-        showToast('尚未設定連結');
-        return;
-    }
-    openExternal(url);
-}
-
-
-// ========================================
 // 快取破壞工具函式 - 強制每次都取得最新內容
 // ========================================
 
@@ -780,7 +735,7 @@ async function renderBibleChapter(container, bookId, chapter) {
             <button class="bible-font-btn bible-font-btn-lg" onclick="bibleFontChange(1)" aria-label="放大字體">A＋</button>
         </div>
         <div class="bible-verses" style="font-size:${bibleFontSize}px">
-            ${verses.map((v, i) => `<p class="bible-verse" data-verse="${i}" onclick="bibleSpeakVerseFrom(${i})" title="點擊朗讀；朗讀中點此節＝停止"><sup class="bible-verse-num">${chapter}:${i + 1}</sup>${escapeHtml(v)}</p>`).join('')}
+            ${verses.map((v, i) => `<p class="bible-verse" data-verse="${i}" onclick="bibleSpeakVerseFrom(${i})" title="從此節開始朗讀"><sup class="bible-verse-num">${chapter}:${i + 1}</sup>${escapeHtml(v)}</p>`).join('')}
         </div>
         <div class="bible-chapter-nav">
             ${prev ? `<button class="bible-nav-btn" onclick="bibleGoChapter(${prev.bookId}, ${prev.chapter})">‹ ${escapeHtml(prev.label)}</button>` : '<span></span>'}
@@ -1318,8 +1273,7 @@ function bibleToggleSpeech() {
     }
 }
 
-// 點擊經文：朗讀中點「正在讀的經文」＝停止；點其他經文＝從該節重新開始；
-// 暫停中（網頁版）點同一節＝繼續朗讀；未朗讀時＝從該節開始朗讀
+// 點擊某節經文→從該節開始朗讀
 function bibleSpeakVerseFrom(i) {
     if (!bibleSpeech.supported) {
         showToast(BIBLE_TTS_UNSUPPORTED_MSG);
@@ -1327,26 +1281,6 @@ function bibleSpeakVerseFrom(i) {
     }
     const verses = bibleSpeech.verses || [];
     if (!verses.length || i < 0 || i >= verses.length) return;
-
-    // 朗讀中：點正在讀的這一節＝停止
-    if (bibleSpeech.running && !bibleSpeech.paused) {
-        if (bibleSpeech.index === i) {
-            bibleStopSpeech();
-            return;
-        }
-        bibleStartSpeech(i); // 點其他節＝從該節重新開始
-        return;
-    }
-
-    // 暫停中（網頁版才有暫停）：點同一節＝繼續朗讀
-    if (bibleSpeech.paused && bibleSpeech.index === i) {
-        bibleSpeech.synth.resume();
-        bibleSpeech.paused = false;
-        bibleSpeechSetState('🔊 播放中');
-        return;
-    }
-
-    // 未朗讀（或暫停中點其他節）＝從該節開始朗讀
     bibleStartSpeech(i);
 }
 
@@ -1568,18 +1502,15 @@ function showModal(key) {
     if (!body) return;
 
     if (key === 'give') {
-        const giveUrl = siteLinks.give_url || DEFAULT_SITE_LINKS.give_url;
-        const giveDisplay = giveUrl.replace(/^https?:\/\//, '');
         body.innerHTML = `
             <h3>❤️ 奉獻給 CCAC</h3>
             <p class="subtitle">支持事工</p>
             <p style="margin-bottom:16px;">「各人要隨本心所酌定的，不要作難，不要勉強，因為捐得樂意的人是神所喜愛的。」— 哥林多後書 9:7</p>
             <div style="background:var(--bg);padding:14px;border-radius:10px;margin-bottom:10px;">
                 <p style="font-size:12px;color:var(--text-muted);margin-bottom:2px;">💳 線上奉獻</p>
-                <p style="font-weight:600;">${escapeHtml(giveDisplay)}</p>
+                <p style="font-weight:600;">ccacgranadahills.org/give</p>
             </div>
-            <button class="modal-close" onclick="openSiteLink('give')">前往奉獻 →</button>
-            <button class="modal-close secondary" onclick="closeModal()">關閉</button>
+            <button class="modal-close" onclick="closeModal()">關閉</button>
         `;
     } else if (key === 'about') {
         body.innerHTML = `
@@ -1643,7 +1574,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderEventsPage();
     renderBiblePage();
     updateSermonDate();
-    loadSiteLinks();
 });
 
 // 每 5 分鐘重新整理
@@ -1676,8 +1606,6 @@ window.goToEventPhoto = goToEventPhoto;
 window.viewEventPhoto = viewEventPhoto;
 window.openYouTube = openYouTube;
 window.openNewsletter = openNewsletter;
-window.openSiteLink = openSiteLink;
-window.loadSiteLinks = loadSiteLinks;
 window.showModal = showModal;
 window.showModalWithContent = showModalWithContent;
 window.closeModal = closeModal;

@@ -29,6 +29,32 @@ App 各功能使用說明（首頁、講道收聽、聖經閱讀與字體調整�
 - **儲存**: Cloudflare R2
 - **部署**: Cloudflare
 
+## 🔐 安全設定（重要）
+
+管理員密碼**不可**寫在 `wrangler.toml`（此檔案會提交到公開的 Git 儲存庫）。請改用 Cloudflare Secret：
+
+```bash
+# 1. 先設定 Secret（請用全新、高強度、未曾在網路公開的密碼）
+wrangler secret put ADMIN_PASSWORD
+
+# 2. 之後才部署（若未設定 Secret，後台會 fail-closed，任何人都無法登入）
+wrangler deploy
+```
+
+本機開發請在專案根目錄建立 `.dev.vars`（已列入 `.gitignore`）：
+
+```
+ADMIN_PASSWORD="本機測試用密碼"
+```
+
+其他安全機制：
+
+- 登入後簽發的 token 以 `ADMIN_PASSWORD` 作 **HMAC-SHA256 簽章**，並附帶 **12 小時有效期**；沒有簽章的偽造 token 一律無效。
+- 未設定 `ADMIN_PASSWORD` 時系統 fail-closed，登入一律回傳 500，不會退回任何預設密碼。
+- CORS 僅允許白名單來源（Worker 網域、本機開發、Capacitor App WebView）。
+- API 的 500 錯誤只回傳通用訊息，詳細錯誤僅記錄於 Cloudflare Workers 日誌。
+- 請勿提交 APK／簽章檔到版本控制（`.gitignore` 已加入 `*.apk`、`*.jks`、`*.keystore`）。
+
 ## 🎧 播客 RSS Feed 提交指南
 上傳 MP3 音頻的講道會自動出現在 RSS Feed 中：
 

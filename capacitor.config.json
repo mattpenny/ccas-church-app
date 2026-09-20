@@ -3,7 +3,7 @@
     "webDir":  "public",
     "appName":  "CCAC App",
     "server":  {
-                   "cleartext":  true,
+                   "cleartext":  false,
                    "url":  "https://ccac-api.ccac-church.workers.dev",
                    "allowNavigation":  [
                                            "ccac-api.ccac-church.workers.dev"

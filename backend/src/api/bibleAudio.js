@@ -1,4 +1,4 @@
-import { cors } from '../utils/cors.js';
+﻿import { cors } from '../utils/cors.js';
 
 const pad = n => String(n).padStart(3, '0');
 
@@ -6,7 +6,7 @@ const pad = n => String(n).padStart(3, '0');
 // 支援 HTTP Range（瀏覽器 <audio> seek），模式與講道音頻相同
 export async function getBibleAudio(request, env, params) {
     if (request.method === 'OPTIONS') {
-        return new Response(null, { headers: cors() });
+        return new Response(null, { headers: cors(request) });
     }
 
     try {
@@ -19,7 +19,7 @@ export async function getBibleAudio(request, env, params) {
         if (!env.R2) {
             return new Response(JSON.stringify({ success: false, error: 'R2 儲存未設置' }), {
                 status: 500,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -34,7 +34,7 @@ export async function getBibleAudio(request, env, params) {
         if (!object) {
             return new Response(JSON.stringify({ success: false, error: '本章尚未有音頻檔' }), {
                 status: 404,
-                headers: { 'Content-Type': 'application/json', ...cors() }
+                headers: { 'Content-Type': 'application/json', ...cors(request) }
             });
         }
 
@@ -45,7 +45,7 @@ export async function getBibleAudio(request, env, params) {
                 : contentType,
             'Accept-Ranges': 'bytes',
             'Cache-Control': 'public, max-age=3600',
-            ...cors()
+            ...cors(request)
         };
 
         const rangeHeader = request.headers.get('Range');
@@ -77,9 +77,10 @@ export async function getBibleAudio(request, env, params) {
             }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, error: error.message }), {
+        console.error('API error:', error && error.message);
+        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json', ...cors() }
+            headers: { 'Content-Type': 'application/json', ...cors(request) }
         });
     }
 }
