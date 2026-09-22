@@ -1751,7 +1751,7 @@ async function renderSermons() {
 
     const [seriesList, allSermons] = await Promise.all([
         fetchAPI('/api/series'),
-        fetchAPI('/api/sermons?limit=500')
+        fetchAPI('/api/sermons?limit=10000')
     ]);
 
     const publishedSeries = (seriesList || []).filter(s => s.published !== 0);
@@ -1898,7 +1898,7 @@ async function openStandaloneDetail() {
     if (!container) return;
     container.innerHTML = '<div class="loading-text">載入講道...</div>';
 
-    const res = await fetchAPI('/api/sermons?series_id=none&limit=200');
+    const res = await fetchAPI('/api/sermons?series_id=none&limit=10000');
     const sermons = (res || []).filter(s => s.published !== 0);
 
     container.innerHTML = `

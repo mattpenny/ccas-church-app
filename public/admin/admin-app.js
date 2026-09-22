@@ -203,9 +203,9 @@ function loadStats() {
     const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
     const endpoints = [
-        { id: 'statSermons', url: '/api/sermons' },
+        { id: 'statSermons', url: '/api/sermons?limit=10000' },
         { id: 'statSeries', url: '/api/series' },
-        { id: 'statDocuments', url: '/api/documents' },
+        { id: 'statDocuments', url: '/api/documents?limit=10000' },
         { id: 'statEvents', url: '/api/events' },
         { id: 'statAnnouncements', url: '/api/announcements' }
     ];
@@ -297,7 +297,7 @@ function toggleSermonGroup(key) {
 
 function loadSermons() {
     Promise.all([
-        cachedFetch(`${API_URL}/api/sermons`, {
+        cachedFetch(`${API_URL}/api/sermons?limit=10000`, {
             headers: { 'Authorization': `Bearer ${token}` }
         }).then(res => res.json()),
         cachedFetch(`${API_URL}/api/series`, {
@@ -1199,7 +1199,9 @@ function deleteSermonAsset(id, kind) {
 // ============================================================
 
 function loadDocuments() {
-    cachedFetch(`${API_URL}/api/documents`)
+    cachedFetch(`${API_URL}/api/documents?limit=10000`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
         .then(res => res.json())
         .then(data => {
             const container = document.getElementById('documentsList');
