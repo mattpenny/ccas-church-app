@@ -199,15 +199,19 @@ function loadAllData() {
 }
 
 function loadStats() {
+    // 帶上授權標頭：統計數字需與各分頁清單一致（含隱藏項目）
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
     const endpoints = [
         { id: 'statSermons', url: '/api/sermons' },
+        { id: 'statSeries', url: '/api/series' },
         { id: 'statDocuments', url: '/api/documents' },
         { id: 'statEvents', url: '/api/events' },
         { id: 'statAnnouncements', url: '/api/announcements' }
     ];
 
     endpoints.forEach(({ id, url }) => {
-        cachedFetch(`${API_URL}${url}`)
+        cachedFetch(`${API_URL}${url}`, { headers })
             .then(res => res.json())
             .then(data => {
                 const el = document.getElementById(id);
@@ -332,6 +336,7 @@ function loadSermons() {
         );
 
         const groupHtml = (key, icon, title, subtitle, rawItems) => {
+            groupCount++;
             const items = sortGroup(rawItems);
             // 記住組內順序，供 ▲▼ 上移/下移使用
             sermonOrderCache[key] = items.map(s => s.id);
@@ -356,6 +361,7 @@ function loadSermons() {
         };
 
         let html = '';
+        let groupCount = 0;
 
         // 各系列分組（照系列排序）
         seriesList.forEach(series => {
@@ -374,7 +380,12 @@ function loadSermons() {
             html += groupHtml('standalone', '🎤', '單次講道', '', standalone);
         }
 
-        container.innerHTML = html;
+        // 頂部統計列：與儀表板卡片數字互相核對（含隱藏講道）
+        const hiddenCount = sermons.filter(s => !s.published).length;
+        const summary = `<div class="sermons-summary">共 ${sermons.length} 篇講道 · ${groupCount} 個分組` +
+            (hiddenCount ? ` · ⛔ 隱藏 ${hiddenCount} 篇` : '') + `</div>`;
+
+        container.innerHTML = summary + html;
     })
     .catch(() => showToast('載入講道失敗', 'error'));
 }

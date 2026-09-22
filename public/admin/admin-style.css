@@ -270,7 +270,7 @@ body {
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     margin-bottom: 16px;
 }
@@ -314,6 +314,19 @@ body {
 .stat-icon.gold { background: #FFF4E0; color: var(--gold); }
 .stat-icon.teal { background: #E0F5F0; color: #2A9D8F; }
 .stat-icon.rose { background: #FFE8EE; color: #C94C72; }
+.stat-icon.indigo { background: #E0E7FF; color: #4F46E5; }
+
+/* 講道分頁頂部統計（與儀表板卡片數字互相核對） */
+.sermons-summary {
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
 
 .stat-number {
     font-size: 24px;

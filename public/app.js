@@ -1751,7 +1751,7 @@ async function renderSermons() {
 
     const [seriesList, allSermons] = await Promise.all([
         fetchAPI('/api/series'),
-        fetchAPI('/api/sermons?limit=200')
+        fetchAPI('/api/sermons?limit=500')
     ]);
 
     const publishedSeries = (seriesList || []).filter(s => s.published !== 0);
@@ -1774,18 +1774,26 @@ async function renderSermons() {
         }
     });
 
-    // 只列「主標題 + 副標題」條目（不展開講道內容，點擊進入系列內頁）
-    let html = '';
+    // 頂部統計：與後台儀表板一致（此處為已發布的數字）
+    const summaryParts = [];
+    if (publishedSeries.length) summaryParts.push(`共 ${publishedSeries.length} 個系列`);
+    summaryParts.push(`${sermons.length} 篇講道`);
+    let html = `<div class="series-summary">📚 ${summaryParts.join(' · ')}</div>`;
+
+    // 只列「主標題 + 副標題 + 講道數」條目（不展開講道內容，點擊進入系列內頁）
     publishedSeries.forEach(series => {
         const items = bySeries.get(series.id) || [];
-        const sub = series.subtitle || (items.length ? `${items.length} 篇講道` : '尚未上傳');
+        // 後端 /api/series 已回傳 sermon_count（已發布講道數），優先使用
+        const count = typeof series.sermon_count === 'number' ? series.sermon_count : items.length;
+        const sub = series.subtitle || (count ? '' : '尚未上傳');
         html += `
             <div class="series-row" onclick="openSeriesDetail(${series.id})">
                 <div class="series-row-icon" style="background:${seriesGradient(series.id)}">📚</div>
                 <div class="series-row-text">
                     <h3 class="sr-main">${series.title}</h3>
-                    <p class="sr-sub">${sub}</p>
+                    ${sub ? `<p class="sr-sub">${sub}</p>` : ''}
                 </div>
+                <span class="series-row-count">${count} 篇</span>
                 <span class="series-row-arrow">›</span>
             </div>`;
     });
@@ -1796,8 +1804,8 @@ async function renderSermons() {
                 <div class="series-row-icon" style="background:${seriesGradient(null)}">🎤</div>
                 <div class="series-row-text">
                     <h3 class="sr-main">單次講道</h3>
-                    <p class="sr-sub">${standalone.length} 篇講道</p>
                 </div>
+                <span class="series-row-count">${standalone.length} 篇</span>
                 <span class="series-row-arrow">›</span>
             </div>`;
     }
